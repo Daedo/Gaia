@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Project Gaia </title>
+
+    <!-- Font -->
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&amp;subset=latin" rel="stylesheet">
+    <!-- Style -->
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <!-- jQuery -->
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
+    <!-- Main Code -->
+    <script src="gaia.js" type="text/javascript"></script>
+    <script src="planetdata.js" type="text/javascript"></script>
+  </head>
+  <body onload="loadFromCookie();init()">
+    <h1>Project Gaia</h1>
+    <div class="tab">
+      <button class="tablinks" onclick="openTab(event, 'star')">Star</button>
+      <button class="tablinks" onclick="openTab(event, 'planet')">Planet</button>
+      <button class="tablinks" onclick="openTab(event, 'orbit')">Orbit</button>
+      <button class="tablinks" onclick="openTab(event, 'moon')">Moon</button>
+      <button class="tablinks" onclick="createSavefile();openTab(event, 'save')">Save</button>
+      <button class="tablinks" onclick="openTab(event, 'load')">Load</button>
+      <button class="tablinks" onclick="openTab(event, 'export')">Export</button>
+    </div>
+
+    <div id="star" class="tabcontent">
+      <div class="left">
+        <div class="scrollbox" >
+          <ul style="list-style-type:none;" id="starlist">
+          </ul>
+        </div>
+        <div align="center">
+          <button onclick="starEditor.addStar()">Add Star</button>
+          <button onclick="starEditor.deleteStar()">Delete Star</button>
+        </div>
+      </div>
+      <div class="center" >
+        <table>
+          <tr>
+            <th>Name: </th>
+            <th><input type="text" id="star name" oninput="starEditor.updateName(this.value);"/></th>
+          </tr>
+
+          <tr>
+            <th>Mass: </th>
+            <th><input type="text" id="star mass" oninput="starEditor.updateMass(this.value);"/> (At least 0.08 M☉)</th>
+          </tr>
+
+          <tr>
+            <th>Luminosity: </th>
+            <th id="star luminosity" class="output"></th>
+          </tr>
+
+          <tr>
+            <th>Radius: </th>
+            <th id="star radius" class="output"></th>
+          </tr>
+
+          <tr>
+            <th>Surface Temperature: </th>
+            <th id="star temperature" class="output"></th>
+          </tr>
+
+          <tr>
+            <th>Lifetime: </th>
+            <th id="star lifetime" class="output"></th>
+          </tr>
+
+          <tr>
+            <th>Habitable zone (inner): </th>
+            <th id="star habitable inner" class="output"></th>
+          </tr>
+
+          <tr>
+            <th>Habitable zone (outer): </th>
+            <th id="star habitable outer" class="output"></th>
+          </tr>
+
+          <tr>
+            <th>Star Class: </th>
+            <th id="star class" class="output"></th>
+          </tr>
+
+          <tr style="height: 60px;">
+            <th style="vertical-align: top;">Habitability: </th>
+            <th id="star habitability" class="output" style="vertical-align: top;"></th>
+          </tr>
+        </table>
+      </div>
+      <div class="right">
+        <canvas id="star canvas"  width="250" height="250" style="width:24vw;height:24vw; border:1px solid #d3d3d3;">Your browser does not support the HTML5 canvas tag.</canvas>
+      </div>
+    </div>
+    <div id="planet" class="tabcontent">
+      <div class="left">
+        <div class="scrollbox" >
+          <ul style="list-style-type:none;" id="planetlist">
+          </ul>
+        </div>
+
+        <div align="center">
+          <button onclick="planetEditor.addPlanet()">Add Planet</button>
+          <button onclick="planetEditor.deletePlanet()">Delete Planet</button>
+        </div>
+      </div>
+      <div class="center">
+        <table>
+          <tr>
+            <th>Name: </th>
+            <th><input type="text" id="planet name" oninput="planetEditor.updateName(this.value);"/></th>
+          </tr>
+
+          <tr>
+            <th>Mass: </th>
+            <th><input type="text" id="planet mass" oninput="planetEditor.updateMass(this.value);"/> (between 0.5 and 20 M🜨)</th>
+          </tr>
+
+          <tr>
+            <th>Radius: </th>
+            <th><input type="text" id="planet radius" oninput="planetEditor.updateRadius(this.value);"/> (between 0.1 and 4000 R🜨)</th>
+          </tr>
+
+          <tr>
+            <th>Gravity: </th>
+            <th id="planet gravity" class="output"></th>
+          </tr>
+
+          <tr>
+            <th>Density: </th>
+            <th id="planet density" class="output"></th>
+          </tr>
+
+          <tr>
+            <th>Circumference: </th>
+            <th id="planet circumference" class="output"></th>
+          </tr>
+
+          <tr>
+            <th>Surface Area: </th>
+            <th id="planet area" class="output"></th>
+          </tr>
+
+          <tr>
+            <th>Volume: </th>
+            <th id="planet volume" class="output"></th>
+          </tr>
+
+          <tr>
+            <th>Relative Escape Velocity: </th>
+            <th id="planet escape velocity" class="output"></th>
+          </tr>
+
+          <tr style="height: 75px;">
+            <th  style="vertical-align: top;">Crust Composition: </th>
+            <th  style="vertical-align: top;" id="planet composition" class="output"></th>
+          </tr>
+        </table>
+      </div>
+      <div class="right">
+        <canvas id="planet canvas" width="250" height="250" style="width:24vw;height:24vw; border:1px solid #d3d3d3;">Your browser does not support the HTML5 canvas tag.</canvas>
+      </div>
+    </div>
+    <div id="orbit" class="tabcontent">
+      <div class="left">
+        <div class="scrollbox" >
+          <ul style="list-style-type:none;" id="orbitlist">
+          </ul>
+        </div>
+
+        <div align="center">
+          <button onclick="orbitEditor.addOrbit()">Add Orbit</button>
+          <button onclick="orbitEditor.deleteOrbit()">Delete Orbit</button>
+        </div>
+      </div>
+      <div class="center">
+        <div align="center">
+          <table>
+            <tr>
+              <th>Center Star</th>
+              <th> <select id="orbit starselector" onchange="orbitEditor.updateCenterStar(this.value)"></select></th>
+            </tr>
+            <tr>
+              <th>System Boundaries: </th>
+              <th id="orbit boundaries" class="output"></th>
+            </tr>
+            <tr>
+              <th>Habitable Zone: </th>
+              <th id="orbit habitable" class="output"></th>
+            </tr>
+            <tr>
+              <th >Frost Line: </th>
+              <th id="orbit frostline" class="output"></th>
+            </tr>
+
+            <tr class="objectTR">
+              <th>Planet: </th>
+              <th> <select id="object planetselector" onchange="orbitEditor.updatePlanetIndex(this.value);"></select> </th>
+            </tr>
+
+            <tr class="objectTR">
+              <th>Type: </th>
+              <th> <select id="object typeselector" oninput="orbitEditor.updateObjectType(this.value);"></select></th>
+            </tr>
+
+            <tr class="objectTR">
+              <th>Semi Major Axis: </th>
+              <th><input type="text" id="object semi major axis" oninput="orbitEditor.updateSemiMajorAxis(this.value);"/> in AU</th>
+            </tr>
+
+            <tr class="objectTR">
+              <th>Semi Minor Axis: </th>
+              <th id="object semi minor axis" class="output"></th>
+            </tr>
+
+            <tr class="objectTR">
+              <th>Eccentricity: </th>
+              <th><input type="text" id="object eccentricity" oninput="orbitEditor.updateEccentricity(this.value);"/></th>
+            </tr>
+
+            <tr class="objectTR">
+              <th>Periapsis: </th>
+              <th id="object periapsis" class="output"></th>
+            </tr>
+
+            <tr class="objectTR">
+              <th>Apoapsis: </th>
+              <th id="object apoapsis" class="output"></th>
+            </tr>
+
+            <tr class="objectTR">
+              <th>Orbital Period: </th>
+              <th id="object orbital period" class="output"></th>
+            </tr>
+
+            <tr class="objectTR">
+              <th>Orbital Velocity: </th>
+              <th id="object orbital velocity" class="output"></th>
+            </tr>
+
+            <tr class="objectTR">
+              <th>Inclination: </th>
+              <th><input type="text" id="object inclination" oninput="orbitEditor.updateInclination(this.value);"/> in degree</th>
+            </tr>
+
+            <tr class="objectTR">
+              <th>Longitude of the ascending node: </th>
+              <th><input type="text" id="object longitude of the ascending node" oninput="orbitEditor.updateLongitudeOfTheAscendingNode(this.value);"/> in degree</th>
+            </tr>
+
+            <tr class="objectTR">
+              <th>Argument of Periapsis: </th>
+              <th><input type="text" id="object argument of periapsis" oninput="orbitEditor.updateArgumentOfPeriapsis(this.value);"/> in degree</th>
+            </tr>
+
+            <!-- Add True Anomaly for Lagange Points? -->
+          </table>
+        </div>
+        <br/>
+        <h2>Orbit Analyis</h2>
+        <ul id="orbit analysis"></ul>
+        <div align="center">
+          <canvas id="orbit canvas"  width="450" height="450" style="width:35vw;height:35vw; border:1px solid #d3d3d3;">Your browser does not support the HTML5 canvas tag.</canvas>
+        </div>
+      </div>
+      <div class="right">
+        <div class="scrollbox">
+          <ul style="list-style-type:none;" id="orbitobjectlist">
+          </ul>
+        </div>
+
+        <div align="center">
+          <button onclick="orbitEditor.addObject()">Add Planet</button>
+          <button onclick="orbitEditor.deleteObject()">Delete Planet</button>
+        </div>
+      </div>
+    </div>
+    <div id="moon" class="tabcontent">
+      <div class="left">
+        <div class="scrollbox" >
+          <ul style="list-style-type:none;" id="systemlist">
+          </ul>
+        </div>
+
+        <div align="center">
+          <button onclick="moonEditor.addMoonSystem()">Add Moonsystem</button>
+          <button onclick="moonEditor.deleteMoonSystem()">Delete Moonsystem</button>
+        </div>
+      </div>
+      <div class="center">
+        <div align="center">
+          <table>
+          <tr>
+            <th>Planet: </th>
+            <th><select id="system planetselector" onchange="moonEditor.updateCenterPlanet(this.value)"></select></th>
+          </tr>
+
+          <tr>
+            <th>Hill sphere</th>
+            <th id="system hillsphere" class="output"></th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Name: </th>
+            <th><input type="text" id="moon name" oninput="moonEditor.updateName(this.value)"/></th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Type: </th>
+            <th><select id="moon typeselector" onchange="moonEditor.updateMoonType(this.value)"></select></th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Mass: </th>
+            <th><input type="text" id="moon mass" oninput="moonEditor.updateMass(this.value)"/> in M☾︎</th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Radius: </th>
+            <th class="radInp"><input type="text" id="moon radius" oninput="moonEditor.updateRadius(this.value)"/> less than R☾︎</th>
+          </tr>
+
+          <tr class="minorMoonTR">
+            <th>Radius Axis B: </th>
+            <th class="radInp"><input type="text" id="moon radius 2" oninput="moonEditor.updateRadiusB(this.value)"/></th>
+          </tr>
+
+          <tr class="minorMoonTR">
+            <th>Radius Axis C: </th>
+            <th class="radInp"><input type="text" id="moon radius 3" oninput="moonEditor.updateRadiusC(this.value)"/></th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Form: </th>
+            <th id="moon form" class="output"</th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Density: </th>
+            <th id="moon density" class="output"</th>
+          </tr>
+
+          <tr class="moonTR">
+            <th style="vertical-align: top;">Composition: </th>
+            <th id="moon composition" class="output"</th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Surface Gravity: </th>
+            <th id="moon gravity" class="output"</th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Semi Major Axis: </th>
+            <th><input type="text" id="moon semi major axis" oninput="moonEditor.updateSemiMajorAxis(this.value)"/> in Lunar Distances</th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Semi Minor Axis: </th>
+            <th id="moon semi minor axis" class="output"</th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Eccentricity: </th>
+            <th><input type="text" id="moon eccentricity" oninput="moonEditor.updateEccentricity(this.value)"/></th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Periapsis: </th>
+            <th id="moon periapsis" class="output"</th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Apoapsis: </th>
+            <th id="moon apoapsis" class="output"</th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Orbital Period: </th>
+            <th id="moon orbital period" class="output"</th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Orbital Velocity: </th>
+            <th id="moon orbital velocity" class="output"</th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Inclination: </th>
+            <th><input type="text" id="moon inclination" oninput="moonEditor.updateInclination(this.value)"/> in degrees</th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Longitude of the ascending node: </th>
+            <th><input type="text" id="moon longitude of the ascending node" oninput="moonEditor.updateLongitudeOfTheAscendingNode(this.value)"/> in degrees</th>
+          </tr>
+
+          <tr class="moonTR">
+            <th>Argument of periapsis: </th>
+            <th><input type="text" id="moon argument of periapsis" oninput="moonEditor.updateArgumentOfPeriapsis(this.value)"/> in degrees</th>
+          </tr>
+        </table>
+        </div>
+        <br/>
+        <h2>Moon Analyis</h2>
+        <ul id="moon analysis"></ul>
+        <div align="center">
+          <canvas id="moon canvas"  width="450" height="450" style="width:35vw;height:35vw; border:1px solid #d3d3d3;">Your browser does not support the HTML5 canvas tag.</canvas>
+        </div>
+      </div>
+      <div class="right">
+        <div class="scrollbox">
+          <ul style="list-style-type:none;" id="moonlist">
+          </ul>
+        </div>
+
+        <div align="center">
+          <button onclick="moonEditor.addMoon()">Add Moon</button>
+          <button onclick="moonEditor.deleteMoon()">Delete Moon</button>
+        </div>
+      </div>
+    </div>
+    <div id="save" class="tabcontent">
+      <p>Download your work as a JSON File. You can upload it in the "Load" tab and continue working.<br/>
+      Alternatively you can save your current progress as a cookie in your browser.<br/>
+      <b style="color:red">Your progress isn't saved automatically.</b> </p>
+      <a href="" id="savedata"  download="world.json"><button type="button">Download Savefile</button></a>
+      <button onclick="saveAsCookie();alert('Done')">Save as cookie</button>
+
+    </div>
+    <div id="load" class="tabcontent">
+      Load your progress from a savefile: <input type="file" onchange="loadFile(event);alert('Done')"/> <br/>
+      Load your progress from a cookie: <button type="button" onclick="loadFromCookie();alert('Done')">Load from cookie</button>
+    </div>
+    <div id="export" class="tabcontent">
+      <p>Export the data as comma seperated values:</p>
+      <a href="" id="exportStars"  download="stars.csv"><button type="button">Export Stars as CSV</button></a>
+      <a href="" id="exportPlanets"download="planets.csv"><button type="button">Export Planets as CSV</button></a>
+      <a href="" id="exportOrbits" download="orbits.csv"><button type="button">Export Orbits as CSV</button></a>
+      <a href="" id="exportMoons"  download="moons.csv"><button type="button">Export Moons as CSV</button></a>
+    </div>
+  </body>
+</html>
