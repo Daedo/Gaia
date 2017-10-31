@@ -1682,11 +1682,19 @@ class Moon {
   }
 
   getGravity() {
-    return round(this.mass / this.radius/this.radius);
+    if(moonTypes[this.typeIndex].name === "Major Moon") {
+      return round(this.getGravity()/this.radius);
+    }
+    var avgRad = (this.radius + this.radius2 + this.radius3)/3;
+    return round(this.mass / avgRad/avgRad);
   }
 
   getDensity() {
-    return round(this.getGravity()/this.radius);
+    if(moonTypes[this.typeIndex].name === "Major Moon") {
+      return round(this.getGravity()/this.radius);
+    }
+    return this.mass/this.radius / this.radius2 / this.radius3;
+
   }
 
   getSemiMinorAxis() {
