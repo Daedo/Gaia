@@ -1185,7 +1185,7 @@ var orbitEditor = {
       this.invalidateFields();
       return;
     }
-    this.getCurrent().objectTypeIndex = type;
+    this.getCurrentObject().objectTypeIndex = type;
     this.updateView();
   },
 
@@ -2184,6 +2184,7 @@ function getMoonAnalysisData() {
     var beyondFrostline = (centerObject.semiMajorAxis >= centerStar.getFrostline());
 
     //Habitability Criterion
+    console.log(orbitTypes[centerObject.objectTypeIndex].name);
     if(orbitTypes[centerObject.objectTypeIndex].name === "Habitable Planet") {
       out = out.concat(habitabilityMoonTest(system.moons,centerPlanet.name));
     }
@@ -2196,6 +2197,7 @@ function getMoonAnalysisData() {
       out = out.concat(regularityMoonTest(moon,centerPlanet.getHillSphereOuter(centerObject,centerStar)));
       //Orbit Type Test
       out = out.concat(inclinationTest(moon.inclination, 360,true,moon.name));
+      out = out.concat(retrogradeTest(moon.inclination,moon.name));
 
       //True Roche Limit
       out = out.concat(rocheMoonTest(centerPlanet,moon));
