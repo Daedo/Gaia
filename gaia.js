@@ -377,6 +377,30 @@ class Planet {
   getPlanetMassInLunarMasses() {
     return this.mass/0.0123;
   }
+
+  getHabitability() {
+    var out= ""
+    if(this.mass < 0.1) {
+      out+= this.name + " is to light to be habitable.\n";
+    }
+
+    if(this.mass > 3.5) {
+      out+= this.name  + " is to heavy to be habitable.\n";
+    }
+
+    if(this.radius < 0.5) {
+      out+= this.name  + " is to small to be habitable.\n";
+    }
+
+    if(this.radius > 1.5) {
+      out+= this.name  + " is to large to be habitable.\n";
+    }
+    if(out==="") {
+      out = this.name+" is in theory habitable."
+    }
+
+    return out.trim().replace("\n","</br>");
+  }
 }
 
 //Classes for interpolation of the planetdata.js data.
@@ -587,6 +611,7 @@ var planetEditor = {
     document.getElementById("planet area").innerHTML            = planet.getSurfaceArea()+" A🜨";
     document.getElementById("planet volume").innerHTML          = planet.getVolume()+" V🜨";
     document.getElementById("planet escape velocity").innerHTML = planet.getEscapeVelocity()+" ve🜨";
+    document.getElementById("planet habitability").innerHTML    = planet.getHabitability();
 
     var compText = "";
     for(var [key,value] of planet.getMakeup()) {
@@ -1458,7 +1483,7 @@ function retrogradeTest(value,name) {
 
 function habitabilityTest(star, object, name) {
   if(star.getHabitableInner() > object.getPeriapsis() || star.getHabitableOuter() < object.getApoapsis()) {
-    return [name+ " orbit peeks out of the habitable zone."];
+    return [name+ "'s orbit peeks out of the habitable zone."];
   }
   return [];
 }
@@ -2183,6 +2208,7 @@ function getMoonAnalysisData() {
     out = out.concat(moonNumberTest(system.moons,centerObject,centerPlanet.name));
 
     for (moon of system.moons) {
+      out = out.concat(liveableMoonTest(centerStar,system,moon));
       //Regularity
       out = out.concat(regularityMoonTest(moon,centerPlanet.getHillSphereOuter(centerObject,centerStar)));
       //Orbit Type Test
@@ -2201,6 +2227,44 @@ function getMoonAnalysisData() {
 
   if(out.length == 0) {
     out = ["No Moons? Werewolfs gonna hate your wold..."];
+  }
+  return out;
+}
+
+function liveableMoonTest(star, system, moon) {
+  if(system.getCenterObject().semiMajorAxis < (star.getHabitableInner()/1.1) || system.getCenterObject().semiMajorAxis > (star.getHabitableOuter()*1.1)) {
+    return [];
+  }
+  var out = [];
+  var scaledAp =moon.getApoapsis()*0.002547;
+
+  var maxDist = system.getCenterObject().getApoapsis() + scaledAp;
+  var minDist = system.getCenterObject().getPeriapsis() - scaledAp;
+
+  if(minDist < star.getHabitableInner() || maxDist > star.getHabitableOuter()) {
+    out.push(moon.name + "'s orbit peeks out of the habitable zone.");
+  }
+  var scaledMass = moon.mass*0.0123;
+  var scaledRad  = moon.radius*0.273;
+
+
+  if(scaledMass < 0.1) {
+    out.push(moon.name + " is to light to be habitable.");
+  }
+
+  if(scaledMass > 3.5) {
+    out.push(moon.name  + " is to heavy to be habitable.");
+  }
+
+  if(scaledRad < 0.5) {
+    out.push(moon.name  + " is to small to be habitable.");
+  }
+
+  if(scaledRad > 1.5) {
+    out.push(moon.name  + " is to large to be habitable.");
+  }
+  if(out.length==0) {
+    out= [moon.name+" is in theory habitable."];
   }
   return out;
 }
