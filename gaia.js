@@ -1683,7 +1683,7 @@ class Moon {
 
   getGravity() {
     if(moonTypes[this.typeIndex].name === "Major Moon") {
-      return round(this.getGravity()/this.radius);
+      return round(this.mass/this.radius/this.radius);
     }
     var avgRad = (this.radius + this.radius2 + this.radius3)/3;
     return round(this.mass / avgRad/avgRad);
