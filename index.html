@@ -218,7 +218,7 @@
 
             <tr class="objectTR">
               <th>Eccentricity: </th>
-              <th><input type="text" id="object eccentricity" oninput="orbitEditor.updateEccentricity(this.value);"/></th>
+              <th><input type="text" id="object eccentricity" oninput="orbitEditor.updateEccentricity(this.value);"/> less than 1</th>
             </tr>
 
             <tr class="objectTR">
@@ -243,7 +243,7 @@
 
             <tr class="objectTR">
               <th>Inclination: </th>
-              <th><input type="text" id="object inclination" oninput="orbitEditor.updateInclination(this.value);"/> in degree</th>
+              <th><input type="text" id="object inclination" oninput="orbitEditor.updateInclination(this.value);"/> at most 180°</th>
             </tr>
 
             <tr class="objectTR">
@@ -365,7 +365,7 @@
 
           <tr class="moonTR">
             <th>Eccentricity: </th>
-            <th><input type="text" id="moon eccentricity" oninput="moonEditor.updateEccentricity(this.value)"/></th>
+            <th><input type="text" id="moon eccentricity" oninput="moonEditor.updateEccentricity(this.value)"/> less than 1</th>
           </tr>
 
           <tr class="moonTR">
@@ -390,7 +390,7 @@
 
           <tr class="moonTR">
             <th>Inclination: </th>
-            <th><input type="text" id="moon inclination" oninput="moonEditor.updateInclination(this.value)"/> in degrees</th>
+            <th><input type="text" id="moon inclination" oninput="moonEditor.updateInclination(this.value)"/> at most 180°</th>
           </tr>
 
           <tr class="moonTR">

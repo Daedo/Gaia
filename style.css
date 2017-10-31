@@ -58,7 +58,7 @@ div.center {
 
 @media (max-width:950px) {
   div.left, div.center, div.right {
-    width:100%;/*The width is 100%, when the viewport is 800px or smaller*/
+    width:100%;
     padding-top:10px;
     float:none;
     text-align:center;
