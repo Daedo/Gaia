@@ -388,21 +388,6 @@ class DataRow {
 
   interpolate(x) {
     if(x<this.xData[0]) {
-      /*var x0 = this.xData[0];
-      var y0 = this.yData[0];
-      var x1 = this.xData[1];
-      var y1 = this.yData[1];
-      var x2 = this.xData[2];
-      var y2 = this.yData[2];
-      var k0 = (y0-y1)/(x0-x1);
-      var k1 = (y1-y2)/(x1-x2);
-
-      var t = (x-x0)/(x1-x0);
-      var a = k0*(x1-x0)-(y1-y0);
-      var b = -k1*(x1-x0)+(y1-y0);
-      var q = (1-t)*y0 + t*y1 + t*(1-t)*(a*(1-t) + b*t);
-      console.log(q);*/
-
       //Linear Interpolation
       var x0 = this.xData[0];
       var y0 = this.yData[0];
@@ -411,8 +396,6 @@ class DataRow {
 
       var delta = (y0-y1)/(x0-x1);
       var n = y0 - delta * x0;
-
-      console.log(delta*x + n);
 
       //return delta*x + n;
       return delta*x + n;;
@@ -1201,7 +1184,7 @@ var orbitEditor = {
 
   updateEccentricity(eccText) {
     var eccentricity = parseFloat(eccText);
-    if(isNaN(eccentricity) || eccentricity<0 || eccentricity>1) {
+    if(isNaN(eccentricity) || eccentricity<0 || eccentricity>=1) {
       this.invalidateObjectFields();
       return;
     }
@@ -1772,7 +1755,7 @@ var moonEditor = {
       if(system.orbitIndex === -1) {
         var nonEmpty = orbitEditor.getFirstNonemptyOrbit();
         if(nonEmpty == -1) {
-          console.log("Add an element to an orbit to start moonbuilding");
+          //console.log("Add an element to an orbit to start moonbuilding");
           return;
         }
         system.orbitIndex = nonEmpty;
@@ -2109,7 +2092,7 @@ var moonEditor = {
 
   updateEccentricity(eccText) {
     var eccentricity = parseFloat(eccText);
-    if(isNaN(eccentricity) || eccentricity<0 || eccentricity>1) {
+    if(isNaN(eccentricity) || eccentricity<0 || eccentricity>=1) {
       this.invalidateMoonFields();
       return;
     }
@@ -2184,7 +2167,6 @@ function getMoonAnalysisData() {
     var beyondFrostline = (centerObject.semiMajorAxis >= centerStar.getFrostline());
 
     //Habitability Criterion
-    console.log(orbitTypes[centerObject.objectTypeIndex].name);
     if(orbitTypes[centerObject.objectTypeIndex].name === "Habitable Planet") {
       out = out.concat(habitabilityMoonTest(system.moons,centerPlanet.name));
     }
