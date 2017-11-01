@@ -114,7 +114,7 @@ class Star {
     }
 
     if(this.mass>1.4) {
-      return "The lifetime of the star might me to short for evolution.<br/>Star gives of high amounths of UV radiation.";
+      return "The lifetime of the star might be too short for evolution.<br/>Star gives off high amounts of UV radiation.";
     }
     if(this.mass<0.6) {
       return "The habitable zone is too close to the star.<br/>Solar activity will be a problem.";
@@ -296,7 +296,7 @@ var starEditor =  {
 
 /* Planet */
 class Planet {
-  constructor(name, mass, radius) {
+  constructor(name, mass, radius,planetTypeIndex) {
     if( name === undefined) {
       name = "Planet McPlanetface";
     }
@@ -309,9 +309,14 @@ class Planet {
       radius = 1;
     }
 
+    if(planetTypeIndex == undefined) {
+      planetTypeIndex = 0;
+    }
+
     this.name = name;
     this.mass = mass;
     this.radius = radius;
+    this.planetTypeIndex = 0;
   }
 
   getRadius() {
@@ -424,7 +429,6 @@ class DataRow {
       //return delta*x + n;
       return delta*x + n;;
     }
-
 
     if(x>this.xData[this.xData.length-1]) {
       return NaN;
@@ -591,6 +595,7 @@ var planetEditor = {
       document.getElementById("planet name").value    = this.getCurrent().name;
       document.getElementById("planet mass").value    = this.getCurrent().mass;
       document.getElementById("planet radius").value  = this.getCurrent().radius;
+      document.getElementById("planet typeselector").value = this.getCurrent().planetTypeIndex;
 
       this.updateView();
     }
@@ -734,14 +739,103 @@ var planetEditor = {
 
   updateRadius(radiusText) {
     var radius = parseFloat(radiusText);
-    if(isNaN(radius) || radius <0.5 || radius >20 ) {
+    if(isNaN(radius) || radius <0.5 || radius >20) {
       this.invalidateFields();
       return;
     }
     this.getCurrent().radius = radius;
     this.updateView();
+  },
+
+  updatePlanetType(type) {
+    if(isNaN(type) || type < 0 || type >= planetTypes.length) {
+      this.invalidateFields();
+      return;
+    }
+    this.getCurrent().planetTypeIndex = type;
+    this.updateView();
   }
 }
+
+var planetTypes = [
+    {
+      name: "Terrestrial Planet",
+      getAnalysis(star, object,name) {
+        var out = systemLimitTest(star,object, name);
+        out = out.concat(eccentricityTest(0, 0.1, object.eccentricity, name));
+        out = out.concat(retrogradeTest(object.inclination,name));
+        out = out.concat(inclinationTest(object.inclination, 5,false,name));
+
+
+        return out;
+      }
+    },
+    {
+      name: "Habitable Planet",
+      getAnalysis(star, object,name) {
+        var out= systemLimitTest(star,object, name);
+        out = out.concat(eccentricityTest(0,0.2,object.eccentricity,name));
+        out = out.concat(retrogradeTest(object.inclination,name));
+        out = out.concat(inclinationTest(object.inclination, 5,false,name));
+        out = out.concat(habitabilityTest(star,object,name));
+        return out;
+      }
+    },
+    {
+      name: "Classical Gasgiant",
+      getAnalysis(star, object,name) {
+        var out= systemLimitTest(star,object, name);
+        out = out.concat(axisTest(star,object, false,true,false,false, name));
+        out = out.concat(eccentricityTest(0.001,0.099,object.eccentricity,name));
+        out = out.concat(retrogradeTest(object.inclination,name));
+        out = out.concat(inclinationTest(object.inclination, 5,false,name));
+        return out;
+      }
+    },
+    {
+      name: "Super Gasgiant",
+      getAnalysis(star, object,name) {
+        var out= systemLimitTest(star,object, name);
+        out = out.concat(axisTest(star,object, true,false,false,false, name));
+        out = out.concat(eccentricityTest(0.001,0.099,object.eccentricity,name));
+        out = out.concat(retrogradeTest(object.inclination,name));
+        out = out.concat(inclinationTest(object.inclination, 5,false,name));
+        return out;
+      }
+    },
+    {
+      name: "Hot Gasgiant",
+      getAnalysis(star, object,name) {
+        var out= systemLimitTest(star,object, name);
+        out = out.concat(axisTest(star,object, true,false,true,false, name));
+        out = out.concat(eccentricityTest(0.001,0.099,object.eccentricity,name));
+        out = out.concat(retrogradeTest(object.inclination,name));
+        out = out.concat(inclinationTest(object.inclination, 10,true,name));
+        return out;
+      }
+    },
+    {
+      name: "Eccentric Gasgiant",
+      getAnalysis(star, object,name) {
+        var out= systemLimitTest(star,object, name);
+        out = out.concat(eccentricityTest(0.1,1,object.eccentricity,name));
+        out = out.concat(retrogradeTest(object.inclination,name));
+        out = out.concat(inclinationTest(object.inclination, 5,false,name));
+        return out;
+      }
+    },
+    {
+      name: "Gas Dwarves",
+      getAnalysis(star, object,name) {
+        var out= systemLimitTest(star,object, name);
+        out = out.concat(axisTest(star,object, false,false,false,true, name));
+        out = out.concat(eccentricityTest(0.001,0.099,object.eccentricity,name));
+        out = out.concat(retrogradeTest(object.inclination,name));
+        out = out.concat(inclinationTest(object.inclination, 5,false,name));
+        return out;
+      }
+    }
+];
 
 /* Orbit */
 class Orbit {
@@ -764,13 +858,9 @@ class Orbit {
 }
 
 class OrbitObject {
-  constructor(planetIndex,objectTypeIndex,semiMajorAxis,eccentricity,inclination,longitudeOfTheAscendingNode,argumentOfPeriapsis) {
+  constructor(planetIndex,semiMajorAxis,eccentricity,inclination,longitudeOfTheAscendingNode,argumentOfPeriapsis) {
     if(planetIndex === undefined) {
       planetIndex = 0;
-    }
-
-    if(objectTypeIndex === undefined) {
-        objectTypeIndex = 0;
     }
 
     if(semiMajorAxis === undefined) {
@@ -794,7 +884,6 @@ class OrbitObject {
     }
 
     this.planetIndex=planetIndex;
-    this.objectTypeIndex = objectTypeIndex;
     this.semiMajorAxis = semiMajorAxis;
     this.eccentricity = eccentricity;
     this.inclination = inclination;
@@ -1164,10 +1253,7 @@ var orbitEditor = {
         this.objectIndex = -1;
       } else {
         this.objectIndex = index;
-
         var currentOrbitObject = this.getCurrentObject();
-
-        document.getElementById("object typeselector").value                    = currentOrbitObject.objectTypeIndex;
         document.getElementById("object semi major axis").value                 = currentOrbitObject.semiMajorAxis;
         document.getElementById("object eccentricity").value                    = currentOrbitObject.eccentricity;
         document.getElementById("object inclination").value                     = currentOrbitObject.inclination;
@@ -1185,15 +1271,6 @@ var orbitEditor = {
       return;
     }
     this.getCurrentObject().planetIndex = planetIndex;
-    this.updateView();
-  },
-
-  updateObjectType(type) {
-    if(isNaN(type) || type < 0 || type >= orbitTypes.length) {
-      this.invalidateFields();
-      return;
-    }
-    this.getCurrentObject().objectTypeIndex = type;
     this.updateView();
   },
 
@@ -1249,86 +1326,6 @@ var orbitEditor = {
 
 }
 
-var orbitTypes = [
-    {
-      name: "Terrestrial Planet",
-      getAnalysis(star, object,name) {
-        var out = systemLimitTest(star,object, name);
-        out = out.concat(eccentricityTest(0, 0.1, object.eccentricity, name));
-        out = out.concat(retrogradeTest(object.inclination,name));
-        out = out.concat(inclinationTest(object.inclination, 5,false,name));
-
-
-        return out;
-      }
-    },
-    {
-      name: "Habitable Planet",
-      getAnalysis(star, object,name) {
-        var out= systemLimitTest(star,object, name);
-        out = out.concat(eccentricityTest(0,0.2,object.eccentricity,name));
-        out = out.concat(retrogradeTest(object.inclination,name));
-        out = out.concat(inclinationTest(object.inclination, 5,false,name));
-        out = out.concat(habitabilityTest(star,object,name));
-        return out;
-      }
-    },
-    {
-      name: "Classical Gasgiant",
-      getAnalysis(star, object,name) {
-        var out= systemLimitTest(star,object, name);
-        out = out.concat(axisTest(star,object, false,true,false,false, name));
-        out = out.concat(eccentricityTest(0.001,0.099,object.eccentricity,name));
-        out = out.concat(retrogradeTest(object.inclination,name));
-        out = out.concat(inclinationTest(object.inclination, 5,false,name));
-        return out;
-      }
-    },
-    {
-      name: "Super Gasgiant",
-      getAnalysis(star, object,name) {
-        var out= systemLimitTest(star,object, name);
-        out = out.concat(axisTest(star,object, true,false,false,false, name));
-        out = out.concat(eccentricityTest(0.001,0.099,object.eccentricity,name));
-        out = out.concat(retrogradeTest(object.inclination,name));
-        out = out.concat(inclinationTest(object.inclination, 5,false,name));
-        return out;
-      }
-    },
-    {
-      name: "Hot Gasgiant",
-      getAnalysis(star, object,name) {
-        var out= systemLimitTest(star,object, name);
-        out = out.concat(axisTest(star,object, true,false,true,false, name));
-        out = out.concat(eccentricityTest(0.001,0.099,object.eccentricity,name));
-        out = out.concat(retrogradeTest(object.inclination,name));
-        out = out.concat(inclinationTest(object.inclination, 10,true,name));
-        return out;
-      }
-    },
-    {
-      name: "Eccentric Gasgiant",
-      getAnalysis(star, object,name) {
-        var out= systemLimitTest(star,object, name);
-        out = out.concat(eccentricityTest(0.1,1,object.eccentricity,name));
-        out = out.concat(retrogradeTest(object.inclination,name));
-        out = out.concat(inclinationTest(object.inclination, 5,false,name));
-        return out;
-      }
-    },
-    {
-      name: "Gas Dwarves",
-      getAnalysis(star, object,name) {
-        var out= systemLimitTest(star,object, name);
-        out = out.concat(axisTest(star,object, false,false,false,true, name));
-        out = out.concat(eccentricityTest(0.001,0.099,object.eccentricity,name));
-        out = out.concat(retrogradeTest(object.inclination,name));
-        out = out.concat(inclinationTest(object.inclination, 5,false,name));
-        return out;
-      }
-    }
-];
-
 /* Orbit analysis*/
 function updateOrbitAnalysis() {
   var list = document.getElementById("orbit analysis");
@@ -1356,8 +1353,9 @@ function getOrbitAnalysisData() {
   out = out.concat(orbitAxisIndicator());
 
   for (var object of currentOrbitObjects) {
-    var type = orbitTypes[object.objectTypeIndex];
-    var name = planetEditor.getPlanet(object.planetIndex).name;
+    var planet = planetEditor.getPlanet(object.planetIndex);
+    var type = planetTypes[planet.planetTypeIndex];
+    var name = planet.name;
     out = out.concat(type.getAnalysis(centerStar, object,name));
   }
 
@@ -2200,12 +2198,12 @@ function getMoonAnalysisData() {
     var beyondFrostline = (centerObject.semiMajorAxis >= centerStar.getFrostline());
 
     //Habitability Criterion
-    if(orbitTypes[centerObject.objectTypeIndex].name === "Habitable Planet") {
+    if(planetTypes[centerPlanet.planetTypeIndex].name === "Habitable Planet") {
       out = out.concat(habitabilityMoonTest(system.moons,centerPlanet.name));
     }
 
     //Number of Moons
-    out = out.concat(moonNumberTest(system.moons,centerObject,centerPlanet.name));
+    out = out.concat(moonNumberTest(system.moons,centerPlanet));
 
     for (moon of system.moons) {
       out = out.concat(liveableMoonTest(centerStar,system,moon));
@@ -2284,8 +2282,8 @@ function habitabilityMoonTest(moons, pName) {
   return [];
 }
 
-function moonNumberTest(moons,object,name) {
-  var typeName = orbitTypes[object.objectTypeIndex].name
+function moonNumberTest(moons,planet) {
+  var typeName = planetTypes[planet.planetTypeIndex].name;
   if(typeName === "Terrestrial Planet" || typeName === "Habitable Planet") {
     var majorMoonCount = 0;
     var minorMoonCount = 0;
@@ -2298,7 +2296,7 @@ function moonNumberTest(moons,object,name) {
     }
 
     if((majorMoonCount + minorMoonCount/2)>=4 || majorMoonCount>=2) {
-      return [name+" has unusually many moons."];
+      return [planet.name+" has unusually many moons."];
     }
 
   }
@@ -2416,10 +2414,10 @@ function rotatePoint(pt, roll, pitch, yaw) {
 
 /* Save, Load and Init */
 function init() {
-  var typeSelector =document.getElementById("object typeselector");
+  var typeSelector =document.getElementById("planet typeselector");
   clearList(typeSelector);
   i = 0;
-  for (var type of orbitTypes) {
+  for (var type of planetTypes) {
       var node = document.createElement("option");
       node.value = i;
       var textnode = document.createTextNode(type.name);
@@ -2485,27 +2483,75 @@ function loadData(json) {
 
   for (var star of obj.stars) {
     star.__proto__ = Star.prototype;
+
+    var nStar = new Star();
+    for (val in nStar) {
+      if(star[val] === undefined) {
+        star[val] = nStar[val];
+      }
+    }
   }
+
   for (var planet of obj.planets) {
     planet.__proto__ = Planet.prototype;
+
+    var nPlanet = new Planet();
+    for (val in nPlanet) {
+      if(planet[val] === undefined) {
+        planet[val] = nPlanet[val];
+      }
+    }
   }
+
+
   for (var orbit of obj.orbits) {
     orbit.__proto__ = Orbit.prototype;
+
+    var nOrbit = new Orbit();
+    for (val in nOrbit) {
+      if(orbit[val] === undefined) {
+        orbit[val] = nOrbit[val];
+      }
+    }
 
     if(orbit.objects.length > 0) {
       activateTab("moon");
     }
     for(var object of orbit.objects) {
       object.__proto__ = OrbitObject.prototype;
+      var nOrbitObjec = new OrbitObject();
+      for (val in nOrbitObjec) {
+        if(object[val] === undefined) {
+          object[val] = nOrbitObjec[val];
+        }
+      }
     }
   }
+
   for (var system of obj.moons) {
     system.__proto__ = MoonSystem.prototype;
 
+    var nSystem = new MoonSystem();
+    for (val in nSystem) {
+      if(system[val] === undefined) {
+        system[val] = nSystem[val];
+      }
+    }
+
+
+
     for(var moon of system.moons) {
       moon.__proto__ = Moon.prototype;
+
+      var nMoon = new Moon();
+      for (val in nMoon) {
+        if(moon[val] === undefined) {
+          moon[val] = nMoon[val];
+        }
+      }
     }
   }
+
   starEditor.stars = obj.stars;
   planetEditor.planets = obj.planets;
   orbitEditor.orbits = obj.orbits;
@@ -2573,6 +2619,7 @@ function updateExportPlanetsData() {
     data+= planet.name+",";
     data+= planet.mass+",";
     data+= planet.radius+",";
+    data+= planetTypes[planet.planetTypeIndex].name+",";
     data+= planet.getGravity()+",";
     data+= planet.getDensity()+",";
     data+= planet.getCircumference()+",";
@@ -2608,7 +2655,6 @@ function updateExportOrbitsData() {
     for (object of orbit.objects) {
       data+= sName+",";
       data+= planetEditor.getPlanet(object.planetIndex).name+",";
-      data+= orbitTypes[object.objectTypeIndex].name+",";
       data+= object.semiMajorAxis+",";
       data+= object.getSemiMinorAxis()+",";
       data+= object.eccentricity+",";

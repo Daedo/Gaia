@@ -116,12 +116,17 @@
 
           <tr>
             <th>Mass: </th>
-            <th><input type="text" id="planet mass" oninput="planetEditor.updateMass(this.value);"/> (between 0.5 and 20 M🜨)</th>
+            <th><input type="text" id="planet mass" oninput="planetEditor.updateMass(this.value);"/> (between 0.1 and 4000 M🜨)</th>
           </tr>
 
           <tr>
             <th>Radius: </th>
-            <th><input type="text" id="planet radius" oninput="planetEditor.updateRadius(this.value);"/> (between 0.1 and 4000 R🜨)</th>
+            <th><input type="text" id="planet radius" oninput="planetEditor.updateRadius(this.value);"/> (between 0.5 and 20 R🜨)</th>
+          </tr>
+
+          <tr>
+            <th>Type</th>
+            <th><select id="planet typeselector" oninput="planetEditor.updatePlanetType(this.value);"></select></th>
           </tr>
 
           <tr>
@@ -153,6 +158,8 @@
             <th>Relative Escape Velocity: </th>
             <th id="planet escape velocity" class="output"></th>
           </tr>
+
+
 
           <tr>
             <th>Habitability: </th>
@@ -204,11 +211,6 @@
             <tr class="objectTR">
               <th>Planet: </th>
               <th> <select id="object planetselector" onchange="orbitEditor.updatePlanetIndex(this.value);"></select> </th>
-            </tr>
-
-            <tr class="objectTR">
-              <th>Type: </th>
-              <th> <select id="object typeselector" oninput="orbitEditor.updateObjectType(this.value);"></select></th>
             </tr>
 
             <tr class="objectTR">
