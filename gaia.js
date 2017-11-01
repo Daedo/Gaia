@@ -95,7 +95,13 @@ class Star {
   }
 
   getColor() {
-    switch (this.getClass()) {
+    var kelvinTemp = this.getTemperature()*5772;
+
+    return rgbFromKelvinTemp(kelvinTemp)
+
+
+
+    /*switch (this.getClass()) {
       case "O": return "#9bb0ff";
       case "B": return "#aabfff";
       case "A": return "#e4e8fc";
@@ -105,7 +111,7 @@ class Star {
       case "M": return "#fbc886";
       default:  return "#ffffff";
 
-    }
+    }*/
   }
 
   getHabitability() {
@@ -2411,6 +2417,69 @@ function rotatePoint(pt, roll, pitch, yaw) {
 
   return [x1+x2+x3, y1+y2+y3, z1+z2+z3];
 }
+
+function rgbFromKelvinTemp(temp) {
+  var r,g,b;
+  //Temperature must fall between 1000 and 40000 degrees
+  if ( temp > 40000 ) {
+    temp = 40000;
+  }
+  //All calculations require temp \ 100, so only do the conversion once
+  temp /= 100;
+
+  //Calculate each color in turn
+
+  //First: red
+  if ( temp <= 66 ) {
+    r = 255;
+  } else {
+    var tmpCalc = temp - 60;
+    tmpCalc = 329.698727446 * Math.pow(tmpCalc, -0.1332047592);
+    r = Math.round(tmpCalc);
+    if ( r > 255 ) {
+      r = 255;
+    }
+  }
+
+  //Second: green
+  if ( temp <= 66 ) {
+    //Note: the R-squared value for this approximation is .996
+    var tmpCalc = temp;
+    tmpCalc = 99.4708025861 * Math.log(tmpCalc) - 161.1195681661;
+    g = Math.round(tmpCalc);
+    if ( g > 255 ) {
+      g = 255;
+    }
+  } else {
+    //Note: the R-squared value for this approximation is .987
+    var tmpCalc = temp - 60;
+    tmpCalc = 288.1221695283 * Math.pow(tmpCalc, -0.0755148492);
+    g = Math.round(tmpCalc);
+    if ( g > 255 ){
+      g = 255;
+    }
+  }
+
+  //Third: blue
+  if ( temp >= 66 ) {
+    b = 255;
+  } else {
+    if ( temp <= 19 ) {
+      b = 0;
+    } else {
+      //Note: the R-squared value for this approximation is .998
+      var tmpCalc = temp - 10;
+      tmpCalc = 138.5177312231 * Math.log(tmpCalc) - 305.0447927307;
+
+      b = Math.round(tmpCalc);
+      if ( b > 255 ) {
+        b = 255;
+      }
+    }
+  }
+  return "rgb("+r+","+g+","+b+")";
+}
+
 
 /* Save, Load and Init */
 function init() {
