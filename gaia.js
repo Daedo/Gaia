@@ -191,8 +191,8 @@ var starEditor =  {
     if(index >= 0 && index < this.stars.length) {
       this.index = index;
 
-      document.getElementById("star name").value = this.getCurrent().name;
-      document.getElementById("star mass").value = this.getCurrent().mass;
+      document.getElementById("star-name").value = this.getCurrent().name;
+      document.getElementById("star-mass").value = this.getCurrent().mass;
 
       this.updateView();
     }
@@ -200,7 +200,7 @@ var starEditor =  {
 
   invalidateFields() {
     invalidate("star");
-    document.getElementById("star class").innerHTML = "Not a star.";
+    document.getElementById("star-class").innerHTML = "Not a star.";
   },
 
   updateView() {
@@ -208,14 +208,14 @@ var starEditor =  {
     this.updateSelector();
 
     var star = this.getCurrent();
-    document.getElementById("star luminosity").innerHTML      = star.getLuminosity()+" L☉";
-    document.getElementById("star radius").innerHTML          = star.getRadius()+" R☉";
-    document.getElementById("star temperature").innerHTML     = star.getTemperature()+" T☉";
-    document.getElementById("star lifetime").innerHTML        = star.getLifetime()+" A☉";
-    document.getElementById("star habitable inner").innerHTML = star.getHabitableInner()+" AU";
-    document.getElementById("star habitable outer").innerHTML = star.getHabitableOuter()+" AU";
-    document.getElementById("star class").innerHTML           = star.getClass();
-    document.getElementById("star habitability").innerHTML    = star.getHabitability();
+    document.getElementById("star-luminosity").innerHTML      = star.getLuminosity()+" L☉";
+    document.getElementById("star-radius").innerHTML          = star.getRadius()+" R☉";
+    document.getElementById("star-temperature").innerHTML     = star.getTemperature()+" T☉";
+    document.getElementById("star-lifetime").innerHTML        = star.getLifetime()+" A☉";
+    document.getElementById("star-habitable-inner").innerHTML = star.getHabitableInner()+" AU";
+    document.getElementById("star-habitable-outer").innerHTML = star.getHabitableOuter()+" AU";
+    document.getElementById("star-class").innerHTML           = star.getClass();
+    document.getElementById("star-habitability").innerHTML    = star.getHabitability();
 
     this.redraw();
   },
@@ -225,7 +225,7 @@ var starEditor =  {
   },
 
   updateSelector() {
-    var selector = document.getElementById("orbit starselector");
+    var selector = document.getElementById("orbit-starselector");
     var val = selector.value;
     clearList(selector);
     var i = 0;
@@ -244,7 +244,7 @@ var starEditor =  {
     var star = this.getCurrent();
     var sun = new Star("Sun",1);
 
-    var c = document.getElementById("star canvas");
+    var c = document.getElementById("star-canvas");
     var ctx = c.getContext("2d");
 
     var canvasSize = c.width;
@@ -598,10 +598,10 @@ var planetEditor = {
     if(index >= 0 && index < this.planets.length) {
       this.index = index;
 
-      document.getElementById("planet name").value    = this.getCurrent().name;
-      document.getElementById("planet mass").value    = this.getCurrent().mass;
-      document.getElementById("planet radius").value  = this.getCurrent().radius;
-      document.getElementById("planet typeselector").value = this.getCurrent().planetTypeIndex;
+      document.getElementById("planet-name").value    = this.getCurrent().name;
+      document.getElementById("planet-mass").value    = this.getCurrent().mass;
+      document.getElementById("planet-radius").value  = this.getCurrent().radius;
+      document.getElementById("planet-typeselector").value = this.getCurrent().planetTypeIndex;
 
       this.updateView();
     }
@@ -616,13 +616,13 @@ var planetEditor = {
     this.updateSelectors();
 
     var planet = this.getCurrent();
-    document.getElementById("planet gravity").innerHTML         = planet.getGravity() + " G🜨";
-    document.getElementById("planet density").innerHTML         = planet.getDensity() + " ρ🜨";
-    document.getElementById("planet circumference").innerHTML   = planet.getCircumference() + " C🜨";
-    document.getElementById("planet area").innerHTML            = planet.getSurfaceArea()+" A🜨";
-    document.getElementById("planet volume").innerHTML          = planet.getVolume()+" V🜨";
-    document.getElementById("planet escape velocity").innerHTML = planet.getEscapeVelocity()+" ve🜨";
-    document.getElementById("planet habitability").innerHTML    = planet.getHabitability();
+    document.getElementById("planet-gravity").innerHTML         = planet.getGravity() + " G🜨";
+    document.getElementById("planet-density").innerHTML         = planet.getDensity() + " ρ🜨";
+    document.getElementById("planet-circumference").innerHTML   = planet.getCircumference() + " C🜨";
+    document.getElementById("planet-area").innerHTML            = planet.getSurfaceArea()+" A🜨";
+    document.getElementById("planet-volume").innerHTML          = planet.getVolume()+" V🜨";
+    document.getElementById("planet-escape-velocity").innerHTML = planet.getEscapeVelocity()+" ve🜨";
+    document.getElementById("planet-habitability").innerHTML    = planet.getHabitability();
 
     var compText = "";
     for(var [key,value] of planet.getMakeup()) {
@@ -636,7 +636,7 @@ var planetEditor = {
       }
     }
 
-    document.getElementById("planet composition").innerHTML     = compText;
+    document.getElementById("planet-composition").innerHTML     = compText;
 
     this.redraw();
   },
@@ -646,7 +646,7 @@ var planetEditor = {
   },
 
   updateSelectors() {
-    var planetSelector = document.getElementById("object planetselector");
+    var planetSelector = document.getElementById("object-planetselector");
     var val = planetSelector.value;
     clearList(planetSelector);
     var i = 0;
@@ -661,7 +661,7 @@ var planetEditor = {
     planetSelector.value = val;
 
 
-    var planetSelector = document.getElementById("system planetselector");
+    var planetSelector = document.getElementById("system-planetselector");
     var val = planetSelector.value;
     clearList(planetSelector);
     var i = 0;
@@ -682,7 +682,7 @@ var planetEditor = {
     var earthComposition = earth.getMakeup();
     var planetComposition = planet.getMakeup();
 
-    var c = document.getElementById("planet canvas");
+    var c = document.getElementById("planet-canvas");
     var ctx = c.getContext("2d");
     var canvasSize = c.width
 
@@ -997,21 +997,21 @@ var orbitEditor = {
     this.updateSelector();
 
     var centerStar = starEditor.getStar(this.getCurrent().starIndex);
-    document.getElementById("orbit starselector").value = this.getCurrent().starIndex;
-    document.getElementById("orbit boundaries").innerHTML = centerStar.getInnerLimit()+" AU - "+centerStar.getOuterLimit()+" AU";
-    document.getElementById("orbit habitable").innerHTML  = centerStar.getHabitableInner()+" AU - "+centerStar.getHabitableOuter()+" AU";
-    document.getElementById("orbit frostline").innerHTML  = centerStar.getFrostline()+" AU";
+    document.getElementById("orbit-starselector").value = this.getCurrent().starIndex;
+    document.getElementById("orbit-boundaries").innerHTML = centerStar.getInnerLimit()+" AU - "+centerStar.getOuterLimit()+" AU";
+    document.getElementById("orbit-habitable").innerHTML  = centerStar.getHabitableInner()+" AU - "+centerStar.getHabitableOuter()+" AU";
+    document.getElementById("orbit-frostline").innerHTML  = centerStar.getFrostline()+" AU";
 
     updateOrbitAnalysis();
 
     if(this.objectIndex != -1) {
       var currentOrbitObject = this.getCurrentObject();
-      document.getElementById("object planetselector").value        = currentOrbitObject.planetIndex;
-      document.getElementById("object semi minor axis").innerHTML   = currentOrbitObject.getSemiMinorAxis()+" AU";
-      document.getElementById("object periapsis").innerHTML         = currentOrbitObject.getPeriapsis()+" AU";
-      document.getElementById("object apoapsis").innerHTML          = currentOrbitObject.getApoapsis()+" AU";
-      document.getElementById("object orbital period").innerHTML    = currentOrbitObject.getOrbitalPeriod(starEditor.getCurrent())+ " P🜨";
-      document.getElementById("object orbital velocity").innerHTML  = currentOrbitObject.getOrbitalVelocity(starEditor.getCurrent())+" Vo🜨";
+      document.getElementById("object-planetselector").value        = currentOrbitObject.planetIndex;
+      document.getElementById("object-semi-minor-axis").innerHTML   = currentOrbitObject.getSemiMinorAxis()+" AU";
+      document.getElementById("object-periapsis").innerHTML         = currentOrbitObject.getPeriapsis()+" AU";
+      document.getElementById("object-apoapsis").innerHTML          = currentOrbitObject.getApoapsis()+" AU";
+      document.getElementById("object-orbital-period").innerHTML    = currentOrbitObject.getOrbitalPeriod(starEditor.getCurrent())+ " P🜨";
+      document.getElementById("object-orbital-velocity").innerHTML  = currentOrbitObject.getOrbitalVelocity(starEditor.getCurrent())+" Vo🜨";
     }
 
     var trs = document.getElementsByClassName("objectTR");
@@ -1041,7 +1041,7 @@ var orbitEditor = {
 
   updateSelector() {
     var gotElement = false;
-    planetSelector = document.getElementById("system planetselector");
+    planetSelector = document.getElementById("system-planetselector");
     var val = planetSelector.value;
     clearList(planetSelector);
     var i = 0;
@@ -1073,7 +1073,7 @@ var orbitEditor = {
   },
 
   redraw() {
-    var c = document.getElementById("orbit canvas");
+    var c = document.getElementById("orbit-canvas");
     var ctx = c.getContext("2d");
     var canvasSize = c.width;
     var trueSize   = c.scrollWidth;
@@ -1260,11 +1260,11 @@ var orbitEditor = {
       } else {
         this.objectIndex = index;
         var currentOrbitObject = this.getCurrentObject();
-        document.getElementById("object semi major axis").value                 = currentOrbitObject.semiMajorAxis;
-        document.getElementById("object eccentricity").value                    = currentOrbitObject.eccentricity;
-        document.getElementById("object inclination").value                     = currentOrbitObject.inclination;
-        document.getElementById("object longitude of the ascending node").value = currentOrbitObject.longitudeOfTheAscendingNode;
-        document.getElementById("object argument of periapsis").value           = currentOrbitObject.argumentOfPeriapsis;
+        document.getElementById("object-semi-major-axis").value                 = currentOrbitObject.semiMajorAxis;
+        document.getElementById("object-eccentricity").value                    = currentOrbitObject.eccentricity;
+        document.getElementById("object-inclination").value                     = currentOrbitObject.inclination;
+        document.getElementById("object-longitude-of-the-ascending-node").value = currentOrbitObject.longitudeOfTheAscendingNode;
+        document.getElementById("object-argument-of-periapsis").value           = currentOrbitObject.argumentOfPeriapsis;
       }
 
       this.updateView();
@@ -1334,7 +1334,7 @@ var orbitEditor = {
 
 /* Orbit analysis*/
 function updateOrbitAnalysis() {
-  var list = document.getElementById("orbit analysis");
+  var list = document.getElementById("orbit-analysis");
   clearList(list);
 
   var data = getOrbitAnalysisData();
@@ -1808,13 +1808,13 @@ var moonEditor = {
     //TODO Update Selector
     orbitEditor.updateSelector();
     var value = this.getCurrent().orbitIndex+","+this.getCurrent().objectIndex;
-    document.getElementById("system planetselector").value = value;
+    document.getElementById("system-planetselector").value = value;
 
 
     var centerObject = currentSystem.getCenterObject();
     var centerStar   = currentSystem.getCenterStar()
     var centerPlanet = planetEditor.getPlanet(centerObject.planetIndex);
-    document.getElementById("system hillsphere").innerHTML = centerPlanet.getHillSphereInner()+" Lunar Distances - "+centerPlanet.getHillSphereOuter(centerObject,centerStar)+" Lunar Distances";
+    document.getElementById("system-hillsphere").innerHTML = centerPlanet.getHillSphereInner()+" Lunar Distances - "+centerPlanet.getHillSphereOuter(centerObject,centerStar)+" Lunar Distances";
 
     var trs = document.querySelectorAll(".moonTR, .minorMoonTR");
     for (tr of trs) {
@@ -1842,15 +1842,15 @@ var moonEditor = {
         rad.appendChild(textnode);
       }
 
-      document.getElementById("moon form").innerHTML            = currentMoon.getForm();
-      document.getElementById("moon density").innerHTML         = currentMoon.getDensity() + " ρ☾︎";
-      document.getElementById("moon composition").innerHTML     = currentMoon.getComposition();
-      document.getElementById("moon gravity").innerHTML         = currentMoon.getGravity() + " G☾︎";
-      document.getElementById("moon semi minor axis").innerHTML = currentMoon.getSemiMinorAxis()+ " Lunar Distances";
-      document.getElementById("moon periapsis").innerHTML       = currentMoon.getPeriapsis()+ " Lunar Distances";
-      document.getElementById("moon apoapsis").innerHTML        = currentMoon.getApoapsis()+ " Lunar Distances";
-      document.getElementById("moon orbital period").innerHTML  = currentMoon.getOrbitalPeriod(centerPlanet) + " P☾︎";
-      document.getElementById("moon orbital velocity").innerHTML= currentMoon.getOrbitalVelocity(centerPlanet) + " V☾︎";
+      document.getElementById("moon-form").innerHTML            = currentMoon.getForm();
+      document.getElementById("moon-density").innerHTML         = currentMoon.getDensity() + " ρ☾︎";
+      document.getElementById("moon-composition").innerHTML     = currentMoon.getComposition();
+      document.getElementById("moon-gravity").innerHTML         = currentMoon.getGravity() + " G☾︎";
+      document.getElementById("moon-semi-minor-axis").innerHTML = currentMoon.getSemiMinorAxis()+ " Lunar Distances";
+      document.getElementById("moon-periapsis").innerHTML       = currentMoon.getPeriapsis()+ " Lunar Distances";
+      document.getElementById("moon-apoapsis").innerHTML        = currentMoon.getApoapsis()+ " Lunar Distances";
+      document.getElementById("moon-orbital-period").innerHTML  = currentMoon.getOrbitalPeriod(centerPlanet) + " P☾︎";
+      document.getElementById("moon-orbital-velocity").innerHTML= currentMoon.getOrbitalVelocity(centerPlanet) + " V☾︎";
 
       var trs = document.querySelectorAll(".minorMoonTR");
       for (tr of trs) {
@@ -1881,7 +1881,7 @@ var moonEditor = {
   },
 
   redraw() {
-    var c = document.getElementById("moon canvas");
+    var c = document.getElementById("moon-canvas");
     var ctx = c.getContext("2d");
     var canvasSize = c.width;
     var trueSize   = c.scrollWidth;
@@ -2031,20 +2031,20 @@ var moonEditor = {
         this.moonIndex = index;
 
         var currentMoon = this.getCurrentMoon();
-        document.getElementById("moon name").value                             = currentMoon.name;
-        document.getElementById("moon typeselector").value                     = currentMoon.typeIndex;
-        document.getElementById("moon mass").value                             = currentMoon.mass;
-        document.getElementById("moon radius").value                           = currentMoon.radius;
+        document.getElementById("moon-name").value                             = currentMoon.name;
+        document.getElementById("moon-typeselector").value                     = currentMoon.typeIndex;
+        document.getElementById("moon-mass").value                             = currentMoon.mass;
+        document.getElementById("moon-radius").value                           = currentMoon.radius;
 
-        document.getElementById("moon radius 2").value                         = currentMoon.radius2;
-        document.getElementById("moon radius 3").value                         = currentMoon.radius3;
+        document.getElementById("moon-radius-2").value                         = currentMoon.radius2;
+        document.getElementById("moon-radius-3").value                         = currentMoon.radius3;
 
 
-        document.getElementById("moon semi major axis").value                  = currentMoon.semiMajorAxis;
-        document.getElementById("moon eccentricity").value                     = currentMoon.eccentricity;
-        document.getElementById("moon inclination").value                      = currentMoon.inclination;
-        document.getElementById("moon longitude of the ascending node").value  = currentMoon.longitudeOfTheAscendingNode;
-        document.getElementById("moon argument of periapsis").value            = currentMoon.argumentOfPeriapsis;
+        document.getElementById("moon-semi-major-axis").value                  = currentMoon.semiMajorAxis;
+        document.getElementById("moon-eccentricity").value                     = currentMoon.eccentricity;
+        document.getElementById("moon-inclination").value                      = currentMoon.inclination;
+        document.getElementById("moon-longitude-of-the-ascending-node").value  = currentMoon.longitudeOfTheAscendingNode;
+        document.getElementById("moon-argument-of-periapsis").value            = currentMoon.argumentOfPeriapsis;
       }
       this.updateView();
     }
@@ -2179,7 +2179,7 @@ var moonTypes = [
 
 /* Moon Analysis */
 function updateMoonAnalysis() {
-  var list = document.getElementById("moon analysis");
+  var list = document.getElementById("moon-analysis");
   clearList(list);
 
   var data = getMoonAnalysisData();
@@ -2483,7 +2483,7 @@ function rgbFromKelvinTemp(temp) {
 
 /* Save, Load and Init */
 function init() {
-  var typeSelector =document.getElementById("planet typeselector");
+  var typeSelector =document.getElementById("planet-typeselector");
   clearList(typeSelector);
   i = 0;
   for (var type of planetTypes) {
@@ -2495,7 +2495,7 @@ function init() {
       i++;
   }
 
-  typeSelector =document.getElementById("moon typeselector");
+  typeSelector =document.getElementById("moon-typeselector");
   clearList(typeSelector);
   i = 0;
   for (var type of moonTypes) {
