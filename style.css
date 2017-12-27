@@ -29,9 +29,9 @@ th {
   text-align: right;
 }
 
-th:nth-child(2) {
+/*th:nth-child(2) {
   text-align: left;
-}
+}*/
 
 .objectTR {
   display:none;
@@ -45,7 +45,7 @@ div.left {
 }
 
 div.right {
-  width: 16%;
+  width: 10%;
   float:left;
   padding-top:20px;
 }
@@ -111,4 +111,23 @@ div.tab button.active {
   height: 25vw;
   overflow: scroll;
   text-align: left;
+}
+
+.descriptionField {
+  text-align: left;
+}
+
+.unitPicker {
+  width: 100%;
+  background:none!important;
+  color:inherit;
+  border:none;
+  padding:0!important;
+  font: inherit;
+  cursor: pointer;
+
+  -webkit-appearance: none;
+   -moz-appearance: none;
+   text-indent: 1px;
+   text-overflow: '';
 }
