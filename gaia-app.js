@@ -1,48 +1,54 @@
 /* Star */
 class Star {
-  constructor(name,mass) {
+  constructor(name,solarMass) {
     if(name === undefined) {
       name = "Stary McStarface";
     }
 
-    if(mass === undefined) {
-      mass = 1;
+    if(solarMass === undefined) {
+      solarMass = 1;
     }
 
     this.name = name;
-    this.mass = mass;
+    this.mass = solarMass;
   }
 
   setName(name) {
     this.name = name;
   }
 
-  setMass(mass) {
-    this.mass = mass;
+  setMass(solarMass) {
+    this.mass = solarMass;
   }
 
   getLuminosity() {
-    return round(Math.pow(this.mass,3));
+    var solarLuminosity = Math.pow(this.mass,3);
+    return round(units.solarLuminosity.convertToUnitless(solarLuminosity));
   }
 
   getRadius() {
-    return round(Math.pow(this.mass,0.74));
+    var solarRadius = Math.pow(this.mass,0.74);
+    return round(units.solarRadius.convertToUnitless(solarRadius));
   }
 
   getTemperature() {
-    return round(Math.pow(this.mass,0.505));
+    var solarTemperature = Math.pow(this.mass,0.505)
+    return round(units.solarTemperature.convertToUnitless(solarTemperature));
   }
 
   getLifetime() {
-    return round(Math.pow(this.mass,-2.5));
+    var solarLifetime = Math.pow(this.mass,-2.5)
+    return round(units.lifetimeSun.convertToUnitless(solarLifetime));
   }
 
   getHabitableInner() {
-    return round(Math.pow(this.mass,3/2)*0.95);
+    var innerAU = Math.pow(this.mass,3/2)*0.95;
+    return round(units.au.convertToUnitless(innerAU));
   }
 
   getHabitableOuter() {
-    return round(Math.pow(this.mass,3/2)*1.37);
+    var outerAU = Math.pow(this.mass,3/2)*1.37;
+    return round(units.au.convertToUnitless(outerAU));
   }
 
   getClass() {
@@ -71,23 +77,9 @@ class Star {
   }
 
   getColor() {
-    var kelvinTemp = this.getTemperature()*5772;
+    var kelvinTemp = this.getTemperature();
 
     return rgbFromKelvinTemp(kelvinTemp)
-
-
-
-    /*switch (this.getClass()) {
-      case "O": return "#9bb0ff";
-      case "B": return "#aabfff";
-      case "A": return "#e4e8fc";
-      case "F": return "#f9fae7";
-      case "G": return "#fdf9b3";
-      case "K": return "#ffd870";
-      case "M": return "#fbc886";
-      default:  return "#ffffff";
-
-    }*/
   }
 
   getHabitability() {
@@ -106,15 +98,18 @@ class Star {
 
   //Orbit Functions
   getFrostline() {
-    return round(4.85*Math.sqrt(Math.pow(this.mass,3)));
+    var frostlineAU = 4.85*Math.sqrt(Math.pow(this.mass,3));
+    return round(units.au.convertToUnitless(frostlineAU));
   }
 
   getInnerLimit() {
-    return round(0.1*this.mass);
+    var innerLimitAU = 0.1*this.mass;
+    return round(units.au.convertToUnitless(innerLimitAU));
   }
 
   getOuterLimit() {
-    return round(40*this.mass);
+    var outerLimitAU = 40*this.mass;
+    return round(units.au.convertToUnitless(outerLimitAU));
   }
 }
 
@@ -167,16 +162,19 @@ var starEditor =  {
     if(index >= 0 && index < this.stars.length) {
       this.index = index;
 
-      document.getElementById("star-name").value = this.getCurrent().name;
-      document.getElementById("star-mass").value = this.getCurrent().mass;
+      var currentStar = this.getCurrent();
+      tabStar.name.value = currentStar.name;
+      var unitlessMass = units.solarMass.convertToUnitless(currentStar.mass)
+      tabStar.mass.setUnitlessValue(unitlessMass);
 
       this.updateView();
     }
   },
 
   invalidateFields() {
-    invalidate("star");
-    document.getElementById("star-class").innerHTML = "Not a star.";
+    //invalidate("star");
+    invalidate(tabStar);
+    tabStar.starClass.innerHTML = "Not a star.";
   },
 
   updateView() {
@@ -184,14 +182,15 @@ var starEditor =  {
     this.updateSelector();
 
     var star = this.getCurrent();
-    document.getElementById("star-luminosity").innerHTML      = star.getLuminosity()+" L☉";
-    document.getElementById("star-radius").innerHTML          = star.getRadius()+" R☉";
-    document.getElementById("star-temperature").innerHTML     = star.getTemperature()+" T☉";
-    document.getElementById("star-lifetime").innerHTML        = star.getLifetime()+" A☉";
-    document.getElementById("star-habitable-inner").innerHTML = star.getHabitableInner()+" AU";
-    document.getElementById("star-habitable-outer").innerHTML = star.getHabitableOuter()+" AU";
-    document.getElementById("star-class").innerHTML           = star.getClass();
-    document.getElementById("star-habitability").innerHTML    = star.getHabitability();
+
+    tabStar.luminosity.setUnitlessValue(star.getLuminosity());
+    tabStar.radius.setUnitlessValue(star.getRadius());
+    tabStar.surfaceTemperature.setUnitlessValue(star.getTemperature());
+    tabStar.lifetime.setUnitlessValue(star.getLifetime());
+    tabStar.habitableZoneInner.setUnitlessValue(star.getHabitableInner());
+    tabStar.habitableZoneOuter.setUnitlessValue(star.getHabitableOuter());
+    tabStar.starClass.innerHTML     = star.getClass();
+    tabStar.habitability.innerHTML  = star.getHabitability();
 
     this.redraw();
   },
@@ -236,7 +235,7 @@ var starEditor =  {
     ctx.fill();
     ctx.stroke();
 
-    var rStar  = rSun * star.getRadius();
+    var rStar  = rSun * units.solarRadius.convertToUnit(star.getRadius());
     var xStar  = xSun+rSun+40+rStar*0.5;
     var yStar  = ySun+rSun-rStar;
 
@@ -305,33 +304,40 @@ class Planet {
   }
 
   getGravity() {
-    return round(this.mass / this.radius/this.radius);
+    var earthGravity = this.mass / this.radius/this.radius;
+    return round(units.earthGravity.convertToUnitless(earthGravity));
   }
 
   getDensity() {
-    return round(this.getGravity()/this.radius);
+    var earthDensity = this.mass / this.radius/this.radius/this.radius;
+    return round(units.earthDensity.convertToUnitless(earthDensity));
   }
 
   getCircumference() {
-    return round(this.radius);
+    var earthRadius = this.radius;
+    return round(units.earthCircumference.convertToUnitless(earthRadius));
   }
 
   getSurfaceArea() {
-    return round(this.radius*this.radius);
+    var earthArea = this.radius*this.radius
+    return round(units.earthSurfaceArea.convertToUnitless(earthArea));
   }
 
   getVolume() {
-    return round(this.radius*this.radius*this.radius);
+    var earthVolume = this.radius*this.radius*this.radius
+    return round(units.earthVolume.convertToUnitless(earthVolume));
   }
 
   getEscapeVelocity() {
-    return round(Math.sqrt(this.mass/this.radius));
+    var earthEscapeVelocity = Math.sqrt(this.mass/this.radius)
+    return round(units.earthEscapeVelocity.convertToUnitless(earthEscapeVelocity));
   }
 
   getMakeup() {
     return interpolator.interpolate(this.mass,this.radius);
   }
 
+  //XXX Update Units
   getHillSphereOuter(orbitObject, star) {
     var a = orbitObject.semiMajorAxis;
     var sMass = star.mass;
@@ -352,16 +358,15 @@ class Planet {
 
   planetRadiiToLunarDistances(val) {
     var earthRad = val*this.radius;
-    var lunDistInEarthRad = 60.33574;
-    return earthRad/lunDistInEarthRad;
+    return Unit.transform(units.earthRadius,units.lunarDistance,earthRad);
   }
 
   getPlanetRadiusInLunarRadii() {
-    return round(this.radius/0.273);
+    return Unit.transform(units.earthRadius,units.lunarRadius, this.radius);
   }
 
   getPlanetMassInLunarMasses() {
-    return this.mass/0.0123;
+    return Unit.transform(units.earthMass,units.lunarMass, this.mass);
   }
 
   getHabitability() {
@@ -573,17 +578,20 @@ var planetEditor = {
     if(index >= 0 && index < this.planets.length) {
       this.index = index;
 
-      document.getElementById("planet-name").value    = this.getCurrent().name;
-      document.getElementById("planet-mass").value    = this.getCurrent().mass;
-      document.getElementById("planet-radius").value  = this.getCurrent().radius;
-      document.getElementById("planet-typeselector").value = this.getCurrent().planetTypeIndex;
+      var currentPlanet = this.getCurrent();
+      tabPlanet.name.value = currentPlanet.name;
+      var unitlessMass = units.earthMass.convertToUnitless(this.getCurrent().mass);
+      tabPlanet.mass.setUnitlessValue(unitlessMass);
+      var unitlessRadius = units.earthRadius.convertToUnitless(this.getCurrent().radius);
+      tabPlanet.radius.setUnitlessValue(unitlessRadius);
+      tabPlanet.typeSelector.value = currentPlanet.planetTypeIndex;
 
       this.updateView();
     }
   },
 
   invalidateFields() {
-    invalidate("planet");
+    invalidate(tabPlanet);
   },
 
   updateView() {
@@ -591,13 +599,13 @@ var planetEditor = {
     this.updateSelectors();
 
     var planet = this.getCurrent();
-    document.getElementById("planet-gravity").innerHTML         = planet.getGravity() + " G🜨";
-    document.getElementById("planet-density").innerHTML         = planet.getDensity() + " ρ🜨";
-    document.getElementById("planet-circumference").innerHTML   = planet.getCircumference() + " C🜨";
-    document.getElementById("planet-area").innerHTML            = planet.getSurfaceArea()+" A🜨";
-    document.getElementById("planet-volume").innerHTML          = planet.getVolume()+" V🜨";
-    document.getElementById("planet-escape-velocity").innerHTML = planet.getEscapeVelocity()+" ve🜨";
-    document.getElementById("planet-habitability").innerHTML    = planet.getHabitability();
+    tabPlanet.gravity.setUnitlessValue(planet.getGravity());
+    tabPlanet.density.setUnitlessValue(planet.getDensity());
+    tabPlanet.circumference.setUnitlessValue(planet.getCircumference());
+    tabPlanet.area.setUnitlessValue(planet.getSurfaceArea());
+    tabPlanet.volume.setUnitlessValue(planet.getVolume());
+    tabPlanet.escapeVelocity.setUnitlessValue(planet.getEscapeVelocity());
+    tabPlanet.habitability.innerHTML   = planet.getHabitability();
 
     var compText = "";
     for(var [key,value] of planet.getMakeup()) {
@@ -611,7 +619,7 @@ var planetEditor = {
       }
     }
 
-    document.getElementById("planet-composition").innerHTML     = compText;
+    tabPlanet.composition.innerHTML     = compText;
 
     this.redraw();
   },
@@ -621,7 +629,7 @@ var planetEditor = {
   },
 
   updateSelectors() {
-    var planetSelector = document.getElementById("object-planetselector");
+    var planetSelector = tabOrbit.planetSelector;
     var val = planetSelector.value;
     clearList(planetSelector);
     var i = 0;
@@ -817,6 +825,85 @@ var planetTypes = [
       }
     }
 ];
+
+function inclinationTest(value, maxDiffFromEccliptic,allowRetrograde,name) {
+  var out = [];
+
+  var acceptableInclination = ((value <= maxDiffFromEccliptic) || (allowRetrograde && (180-value)<= maxDiffFromEccliptic));
+  if(!acceptableInclination) {
+    out.push("The inclination of "+name+" is unusually high.");
+  }
+
+  if(value>90 && !allowRetrograde ) {
+    out.push("The retrograde orbit of "+ name +" might be unstable.");
+  }
+
+  if(value==90) {
+    out.push(name+ " has a polar orbit.");
+  }
+
+  if(value==0 || value == 180) {
+    out.push(name+ " has an equatorial orbit.");
+  }
+  return out;
+}
+
+function retrogradeTest(value,name) {
+  if(value>90) {
+    return [name+ " spins in a retrograde direction."];
+  }
+  return [];
+}
+
+function habitabilityTest(star, object, name) {
+  if(star.getHabitableInner() > object.getPeriapsis() || star.getHabitableOuter() < object.getApoapsis()) {
+    return [name+ "'s orbit peeks out of the habitable zone."];
+  }
+  return [];
+}
+
+function axisTest(star, object, innerSystem, closeToFrostLine, closeToStar, closeToEdge, name) {
+  var out = [];
+  var frostlineMin = units.au.convertToUnit(star.getFrostline())+1;
+  var frostlineAvg = units.au.convertToUnit(star.getFrostline())+1.2
+  var frostlineMax = units.au.convertToUnit(star.getFrostline())+1.2;
+  var outer = units.au.convertToUnit(star.getOuterLimit());
+  var axis = object.semiMajorAxis;
+
+  if(closeToStar) {
+    if(axis < 0.04) {
+      out.push(name+ " is too close to the star");
+    }
+    if(axis > 0.5) {
+      out.push("For a hot object "+name+" is not very hot.")
+    }
+  }
+
+  if(innerSystem) {
+    if(axis > frostlineMax) {
+      out.push(name+ " is unsually far away from the inner system.");
+    }
+  } else {
+    if(axis < frostlineMin) {
+      out.push(name+ " is unsually close to the inner system.");
+    }
+  }
+
+  if(closeToFrostLine) {
+    var relFL = axis/frostlineAvg;
+    if(relFL <0.9 || relFL >1.1) {
+      out.push(name+ " is unsually far away from the frostline.");
+    }
+  }
+
+  if(closeToEdge) {
+    var relOut = axis / outer;
+    if(relOut < 0.9 || relOut > 1.1) {
+      out.push(name+ " is unsually far away from the outer limit of the system.");
+    }
+  }
+  return out;
+}
 /* Orbit */
 class Orbit {
   constructor(starIndex) {
@@ -872,23 +959,28 @@ class OrbitObject {
   }
 
   getSemiMinorAxis() {
-    return round(this.semiMajorAxis*Math.sqrt(1 - (this.eccentricity*this.eccentricity)));
+    var smaAU = this.semiMajorAxis*Math.sqrt(1 - (this.eccentricity*this.eccentricity));
+    return round(units.au.convertToUnitless(smaAU));
   }
 
   getPeriapsis() {
-    return round(this.semiMajorAxis*(1 - this.eccentricity));
+    var periapsisAU = this.semiMajorAxis*(1 - this.eccentricity);
+    return round(units.au.convertToUnitless(periapsisAU));
   }
 
   getApoapsis() {
-    return round(this.semiMajorAxis*(1 + this.eccentricity));
+    var apoapsisAU = this.semiMajorAxis*(1 + this.eccentricity);
+    return round(units.au.convertToUnitless(apoapsisAU));
   }
 
   getOrbitalPeriod(star) {
-    return round(Math.sqrt(this.semiMajorAxis*this.semiMajorAxis*this.semiMajorAxis/star.mass));
+    var orbitalPeriodEarth = Math.sqrt(this.semiMajorAxis*this.semiMajorAxis*this.semiMajorAxis/star.mass);
+    return round(units.earthYear.convertToUnitless(orbitalPeriodEarth));
   }
 
   getOrbitalVelocity(star) {
-    return round(Math.sqrt(star.mass/this.semiMajorAxis));
+    var orbitalVelocityEarth = Math.sqrt(star.mass/this.semiMajorAxis)
+    return round(units.earthVelocity.convertToUnitless(orbitalVelocityEarth));
   }
 }
 
@@ -963,7 +1055,7 @@ var orbitEditor = {
   },
 
   invalidateFields() {
-    invalidate("orbit");
+    invalidate(tabOrbit);
   },
 
   updateView() {
@@ -971,21 +1063,27 @@ var orbitEditor = {
     this.updateSelector();
 
     var centerStar = starEditor.getStar(this.getCurrent().starIndex);
-    document.getElementById("orbit-starselector").value = this.getCurrent().starIndex;
-    document.getElementById("orbit-boundaries").innerHTML = centerStar.getInnerLimit()+" AU - "+centerStar.getOuterLimit()+" AU";
-    document.getElementById("orbit-habitable").innerHTML  = centerStar.getHabitableInner()+" AU - "+centerStar.getHabitableOuter()+" AU";
-    document.getElementById("orbit-frostline").innerHTML  = centerStar.getFrostline()+" AU";
+    tabOrbit.starSelector.value = this.getCurrent().starIndex;
+
+    var bLow  = centerStar.getInnerLimit();
+    var bHigh = centerStar.getOuterLimit();
+    tabOrbit.boundaries.setUnitlessValues(bLow,bHigh);
+
+    var hLow  = centerStar.getHabitableInner();
+    var hHigh =centerStar.getHabitableOuter();
+    tabOrbit.habitableZone.setUnitlessValues(hLow,hHigh);
+    tabOrbit.frostline      .setUnitlessValue(centerStar.getFrostline());
 
     updateOrbitAnalysis();
 
     if(this.objectIndex != -1) {
       var currentOrbitObject = this.getCurrentObject();
-      document.getElementById("object-planetselector").value        = currentOrbitObject.planetIndex;
-      document.getElementById("object-semi-minor-axis").innerHTML   = currentOrbitObject.getSemiMinorAxis()+" AU";
-      document.getElementById("object-periapsis").innerHTML         = currentOrbitObject.getPeriapsis()+" AU";
-      document.getElementById("object-apoapsis").innerHTML          = currentOrbitObject.getApoapsis()+" AU";
-      document.getElementById("object-orbital-period").innerHTML    = currentOrbitObject.getOrbitalPeriod(starEditor.getCurrent())+ " P🜨";
-      document.getElementById("object-orbital-velocity").innerHTML  = currentOrbitObject.getOrbitalVelocity(starEditor.getCurrent())+" Vo🜨";
+      tabOrbit.planetSelector.value = currentOrbitObject.planetIndex;
+      tabOrbit.semiMinorAxis  .setUnitlessValue(currentOrbitObject.getSemiMinorAxis());
+      tabOrbit.periapsis      .setUnitlessValue(currentOrbitObject.getPeriapsis());
+      tabOrbit.apoapsis       .setUnitlessValue(currentOrbitObject.getApoapsis());
+      tabOrbit.orbitalPeriod  .setUnitlessValue(currentOrbitObject.getOrbitalPeriod(starEditor.getCurrent()));
+      tabOrbit.orbitalVelocity.setUnitlessValue(currentOrbitObject.getOrbitalVelocity(starEditor.getCurrent()));
     }
 
     var trs = document.getElementsByClassName("objectTR");
@@ -1057,7 +1155,7 @@ var orbitEditor = {
     var centerStar   = starEditor.getStar(currentOrbit.starIndex);
 
     var rMax = canvasSize/2;
-    var scaleFactor = rMax / centerStar.getOuterLimit();
+    var scaleFactor = rMax / units.au.convertToUnit(centerStar.getOuterLimit());
     var cen = canvasSize/2;
     var cCount = 50;
 
@@ -1066,7 +1164,7 @@ var orbitEditor = {
 
     for(obj of this.getCurrentObjectlist()) {
       var a = obj.semiMajorAxis;
-      var b = obj.getSemiMinorAxis();
+      var b = units.au.convertToUnit(obj.getSemiMinorAxis());
       var e = obj.eccentricity;
 
       var roll  = obj.argumentOfPeriapsis * Math.PI / 180;
@@ -1139,11 +1237,11 @@ var orbitEditor = {
     ctx.strokeStyle = "green";
 
     ctx.beginPath();
-    ctx.arc(cen,cen,scaleFactor*centerStar.getHabitableInner(),0,2*Math.PI);
+    ctx.arc(cen,cen,scaleFactor*units.au.convertToUnit(centerStar.getHabitableInner()),0,2*Math.PI);
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.arc(cen,cen,scaleFactor*centerStar.getHabitableOuter(),0,2*Math.PI);
+    ctx.arc(cen,cen,scaleFactor*units.au.convertToUnit(centerStar.getHabitableOuter()),0,2*Math.PI);
     ctx.stroke();
 
     ctx.fillStyle = "white";
@@ -1222,7 +1320,7 @@ var orbitEditor = {
   },
 
   invalidateObjectFields() {
-    invalidate("object");
+    invalidate(tabOrbit);
   },
 
   setObjectIndex(index) {
@@ -1234,11 +1332,13 @@ var orbitEditor = {
       } else {
         this.objectIndex = index;
         var currentOrbitObject = this.getCurrentObject();
-        document.getElementById("object-semi-major-axis").value                 = currentOrbitObject.semiMajorAxis;
-        document.getElementById("object-eccentricity").value                    = currentOrbitObject.eccentricity;
-        document.getElementById("object-inclination").value                     = currentOrbitObject.inclination;
-        document.getElementById("object-longitude-of-the-ascending-node").value = currentOrbitObject.longitudeOfTheAscendingNode;
-        document.getElementById("object-argument-of-periapsis").value           = currentOrbitObject.argumentOfPeriapsis;
+
+        var smaUnitless = units.au.convertToUnitless(currentOrbitObject.semiMajorAxis);
+        tabOrbit.semiMajorAxis.setUnitlessValue(smaUnitless);
+        tabOrbit.eccentricity.setUnitlessValue(currentOrbitObject.eccentricity);
+        tabOrbit.inclination.setUnitlessValue(currentOrbitObject.inclination);
+        tabOrbit.longitudeOfTheAscendingNode.setUnitlessValue(currentOrbitObject.longitudeOfTheAscendingNode);
+        tabOrbit.argumentOfPeriapsis.setUnitlessValue(currentOrbitObject.argumentOfPeriapsis);
       }
 
       this.updateView();
@@ -1308,7 +1408,7 @@ var orbitEditor = {
 
 /* Orbit analysis*/
 function updateOrbitAnalysis() {
-  var list = document.getElementById("orbit-analysis");
+  var list = tabOrbit.orbitalAnalysis;
   clearList(list);
 
   var data = getOrbitAnalysisData();
@@ -1389,6 +1489,7 @@ function orbitEccentricityIndicator() {
 
 function orbitInclinationIdicator() {
   var currentOrbitObjects = orbitEditor.getCurrentObjectlist();
+
   var N = currentOrbitObjects.length;
   if(N<1) {
     return [];
@@ -1426,85 +1527,6 @@ function eccentricityTest(min, max, value, name) {
 
   if(value > 0.2) {
     out.push(name+" is so eccentric, that it threatens the stability of the system.");
-  }
-  return out;
-}
-
-function inclinationTest(value, maxDiffFromEccliptic,allowRetrograde,name) {
-  var out = [];
-
-  var acceptableInclination = ((value <= maxDiffFromEccliptic) || (allowRetrograde && (180-value)<= maxDiffFromEccliptic));
-  if(!acceptableInclination) {
-    out.push("The inclination of "+name+" is unusually high.");
-  }
-
-  if(value>90 && !allowRetrograde ) {
-    out.push("The retrograde orbit of "+ name +" might be unstable.");
-  }
-
-  if(value==90) {
-    out.push(name+ " has a polar orbit.");
-  }
-
-  if(value==0 || value == 180) {
-    out.push(name+ " has an equatorial orbit.");
-  }
-  return out;
-}
-
-function retrogradeTest(value,name) {
-  if(value>90) {
-    return [name+ " spins in a retrograde direction."];
-  }
-  return [];
-}
-
-function habitabilityTest(star, object, name) {
-  if(star.getHabitableInner() > object.getPeriapsis() || star.getHabitableOuter() < object.getApoapsis()) {
-    return [name+ "'s orbit peeks out of the habitable zone."];
-  }
-  return [];
-}
-
-function axisTest(star, object, innerSystem, closeToFrostLine, closeToStar, closeToEdge, name) {
-  var out = [];
-  var frostlineMin = star.getFrostline()+1;
-  var frostlineAvg = star.getFrostline()+1.2
-  var frostlineMax = star.getFrostline()+1.2;
-  var outer = star.getOuterLimit();
-  var axis = object.semiMajorAxis;
-
-  if(closeToStar) {
-    if(axis < 0.04) {
-      out.push(name+ " is too close to the star");
-    }
-    if(axis > 0.5) {
-      out.push("For a hot object "+name+" is not very hot.")
-    }
-  }
-
-  if(innerSystem) {
-    if(axis > frostlineMax) {
-      out.push(name+ " is unsually far away from the inner system.");
-    }
-  } else {
-    if(axis < frostlineMin) {
-      out.push(name+ " is unsually close to the inner system.");
-    }
-  }
-
-  if(closeToFrostLine) {
-    var relFL = axis/frostlineAvg;
-    if(relFL <0.9 || relFL >1.1) {
-      out.push(name+ " is unsually far away from the frostline.");
-    }
-  }
-
-  if(closeToEdge) {
-    var relOut = axis / outer;
-    if(relOut < 0.9 || relOut > 1.1) {
-      out.push(name+ " is unsually far away from the outer limit of the system.");
-    }
   }
   return out;
 }
@@ -1616,7 +1638,7 @@ class Moon {
   }
 
   getMakeup() {
-    var trueDensity = this.getDensity()*3.344;
+    var trueDensity = this.getDensity()/1000;//*3.344;
     var density = new Map([["Iron",7.87],["Silicate",3.25],["Water",0.93],["Helium",0.000179],["Hydrogen",0.0000899]])
 
     var varPoints = [
@@ -1684,41 +1706,54 @@ class Moon {
   }
 
   getGravity() {
+    var avgRad;
     if(moonTypes[this.typeIndex].name === "Major Moon") {
-      return round(this.mass/this.radius/this.radius);
+      avgRad = this.radius;
+    } else {
+      avgRad = (this.radius + this.radius2 + this.radius3)/3;
     }
-    var avgRad = (this.radius + this.radius2 + this.radius3)/3;
-    return round(this.mass / avgRad/avgRad);
+
+    var lunarGravity = this.mass/avgRad/avgRad;
+    return round(units.lunarGravity.convertToUnitless(lunarGravity));
   }
 
   getDensity() {
+    var volume = 1;
     if(moonTypes[this.typeIndex].name === "Major Moon") {
-      return round(this.getGravity()/this.radius);
+      volume = (this.radius*this.radius*this.radius);
+    } else {
+      volume = (this.radius*this.radius2*this.radius3);
     }
-    return this.mass/this.radius / this.radius2 / this.radius3;
 
+    var lunarDensity = this.mass/volume;
+    return round(units.lunarDensity.convertToUnitless(lunarDensity));
   }
 
   getSemiMinorAxis() {
-    return round(this.semiMajorAxis*Math.sqrt(1 - (this.eccentricity*this.eccentricity)));
+    var smaLunar = this.semiMajorAxis*Math.sqrt(1 - (this.eccentricity*this.eccentricity));
+    return round(units.lunarDistance.convertToUnitless(smaLunar));
   }
 
   getPeriapsis() {
-    return round(this.semiMajorAxis*(1 - this.eccentricity));
+    var periapsisLunar = this.semiMajorAxis*(1 - this.eccentricity);
+    return round(units.lunarDistance.convertToUnitless(periapsisLunar));
   }
 
   getApoapsis() {
-    return round(this.semiMajorAxis*(1 + this.eccentricity));
+    var apoapsisLunar = this.semiMajorAxis*(1 + this.eccentricity);
+    return round(units.lunarDistance.convertToUnitless(apoapsisLunar));
   }
 
   getOrbitalPeriod(planet) {
     var mP = planet.getPlanetMassInLunarMasses()
-    return round(Math.sqrt(this.semiMajorAxis*this.semiMajorAxis*this.semiMajorAxis/mP)/0.11090536506409417);
+    var lunarPeriod = Math.sqrt(this.semiMajorAxis*this.semiMajorAxis*this.semiMajorAxis/mP)/0.11090536506409417;
+    return round(units.earthMonth.convertToUnitless(lunarPeriod));
   }
 
   getOrbitalVelocity(planet) {
-    var mP = planet.getPlanetMassInLunarMasses()
-    return round(Math.sqrt(mP/this.semiMajorAxis)/9.016696);
+    var mP = planet.getPlanetMassInLunarMasses();
+    var lunarVelocity = Math.sqrt(mP/this.semiMajorAxis)/9.016696;
+    return round(units.lunarVelocity.convertToUnitless(lunarVelocity));
   }
 };
 
@@ -1757,7 +1792,7 @@ var moonEditor = {
   },
 
   invalidateFields() {
-    invalidate("system");
+    invalidate(tabMoonSystem);
   },
 
   updateView() {
@@ -1777,17 +1812,16 @@ var moonEditor = {
     this.updateLists();
     var currentSystem = this.getCurrent();
 
-
-    //TODO Update Selector
     orbitEditor.updateSelector();
     var value = this.getCurrent().orbitIndex+","+this.getCurrent().objectIndex;
-    document.getElementById("system-planetselector").value = value;
-
+    tabMoon.planetSelector.value = value;
 
     var centerObject = currentSystem.getCenterObject();
     var centerStar   = currentSystem.getCenterStar()
     var centerPlanet = planetEditor.getPlanet(centerObject.planetIndex);
-    document.getElementById("system-hillsphere").innerHTML = centerPlanet.getHillSphereInner()+" Lunar Distances - "+centerPlanet.getHillSphereOuter(centerObject,centerStar)+" Lunar Distances";
+    var hillLower = units.lunarDistance.convertToUnitless(centerPlanet.getHillSphereInner());
+    var hillUpper = units.lunarDistance.convertToUnitless(centerPlanet.getHillSphereOuter(centerObject,centerStar));
+    tabMoon.hillsphere.setUnitlessValues(hillLower,hillUpper);
 
     var trs = document.querySelectorAll(".moonTR, .minorMoonTR");
     for (tr of trs) {
@@ -1805,25 +1839,23 @@ var moonEditor = {
     if(this.moonIndex > -1) {
       var currentMoon = this.getCurrentMoon();
 
-      var inp = document.getElementsByClassName("radInp");
-      for (rad of inp) {
-        if(rad.childNodes.length>=2) {
-          rad.removeChild(rad.childNodes[1]);
-        }
-        var maxRad = centerPlanet.getPlanetRadiusInLunarRadii();
-        var textnode = document.createTextNode(" less than "+maxRad+" R☾︎");
-        rad.appendChild(textnode);
-      }
+      var maxRadUnitless = units.lunarRadius.convertToUnitless(centerPlanet.getPlanetRadiusInLunarRadii());
+      tabMoon.allowedMaxRad = maxRadUnitless;
+      tabMoon.radius.updateDescription();
+      tabMoon.radiusB.updateDescription();
+      tabMoon.radiusC.updateDescription();
 
-      document.getElementById("moon-form").innerHTML            = currentMoon.getForm();
-      document.getElementById("moon-density").innerHTML         = currentMoon.getDensity() + " ρ☾︎";
-      document.getElementById("moon-composition").innerHTML     = currentMoon.getComposition();
-      document.getElementById("moon-gravity").innerHTML         = currentMoon.getGravity() + " G☾︎";
-      document.getElementById("moon-semi-minor-axis").innerHTML = currentMoon.getSemiMinorAxis()+ " Lunar Distances";
-      document.getElementById("moon-periapsis").innerHTML       = currentMoon.getPeriapsis()+ " Lunar Distances";
-      document.getElementById("moon-apoapsis").innerHTML        = currentMoon.getApoapsis()+ " Lunar Distances";
-      document.getElementById("moon-orbital-period").innerHTML  = currentMoon.getOrbitalPeriod(centerPlanet) + " P☾︎";
-      document.getElementById("moon-orbital-velocity").innerHTML= currentMoon.getOrbitalVelocity(centerPlanet) + " V☾︎";
+      tabMoon.form.innerHTML = currentMoon.getForm();
+
+
+      tabMoon.density.setUnitlessValue(currentMoon.getDensity());
+      tabMoon.composition.innerHTML  = currentMoon.getComposition();
+      tabMoon.surfaceGravity.setUnitlessValue(currentMoon.getGravity());
+      tabMoon.semiMinorAxis.setUnitlessValue(currentMoon.getSemiMinorAxis());
+      tabMoon.periapsis.setUnitlessValue(currentMoon.getPeriapsis());
+      tabMoon.apoapsis.setUnitlessValue(currentMoon.getApoapsis());
+      tabMoon.orbitalPeriod.setUnitlessValue(currentMoon.getOrbitalPeriod(centerPlanet));
+      tabMoon.orbitalVelocity.setUnitlessValue(currentMoon.getOrbitalVelocity(centerPlanet));
 
       var trs = document.querySelectorAll(".minorMoonTR");
       for (tr of trs) {
@@ -1876,7 +1908,7 @@ var moonEditor = {
 
     for(obj of this.getCurrentMoonlist()) {
       var a = obj.semiMajorAxis;
-      var b = obj.getSemiMinorAxis();
+      var b = units.lunarDistance.convertToUnit(obj.getSemiMinorAxis());
       var e = obj.eccentricity;
 
       var roll  = obj.argumentOfPeriapsis * Math.PI / 180;
@@ -2004,27 +2036,25 @@ var moonEditor = {
         this.moonIndex = index;
 
         var currentMoon = this.getCurrentMoon();
-        document.getElementById("moon-name").value                             = currentMoon.name;
-        document.getElementById("moon-typeselector").value                     = currentMoon.typeIndex;
-        document.getElementById("moon-mass").value                             = currentMoon.mass;
-        document.getElementById("moon-radius").value                           = currentMoon.radius;
+        tabMoon.name.value = currentMoon.name;
+        tabMoon.typeSelector.value = currentMoon.typeIndex;
 
-        document.getElementById("moon-radius-2").value                         = currentMoon.radius2;
-        document.getElementById("moon-radius-3").value                         = currentMoon.radius3;
-
-
-        document.getElementById("moon-semi-major-axis").value                  = currentMoon.semiMajorAxis;
-        document.getElementById("moon-eccentricity").value                     = currentMoon.eccentricity;
-        document.getElementById("moon-inclination").value                      = currentMoon.inclination;
-        document.getElementById("moon-longitude-of-the-ascending-node").value  = currentMoon.longitudeOfTheAscendingNode;
-        document.getElementById("moon-argument-of-periapsis").value            = currentMoon.argumentOfPeriapsis;
+        tabMoon.mass.setUnitValue(currentMoon.mass,units.lunarMass);
+        tabMoon.radius.setUnitValue(currentMoon.radius,units.lunarRadius);
+        tabMoon.radiusB.setUnitValue(currentMoon.radius2,units.lunarRadius);
+        tabMoon.radiusC.setUnitValue(currentMoon.radius3,units.lunarRadius);
+        tabMoon.semiMajorAxis.setUnitValue(currentMoon.semiMajorAxis,units.lunarDistance);
+        tabMoon.eccentricity.setUnitlessValue(currentMoon.eccentricity);
+        tabMoon.inclination.setUnitValue(currentMoon.inclination,units.degrees);
+        tabMoon.longitudeOfTheAscendingNode.setUnitValue(currentMoon.longitudeOfTheAscendingNode,units.degrees);
+        tabMoon.argumentOfPeriapsis.setUnitValue(currentMoon.argumentOfPeriapsis,units.degrees);
       }
       this.updateView();
     }
   },
 
   invalidateMoonFields() {
-    invalidate("moon");
+    invalidate(tabMoonMoon);
   },
 
   updateName(name) {
@@ -2322,6 +2352,7 @@ $(".tablinks").click(function (evt) {
   if (tabName === "save") createSavefile();
   openTab(evt, tabName);
 });
+
 // Star handlers
 $("#addStar").click(function (evt) {
   starEditor.addStar();
@@ -2332,9 +2363,7 @@ $("#deleteStar").click(function (evt) {
 $("#star-name").on("input", function (evt) {
   starEditor.updateName(evt.target.value);
 });
-$("#star-mass").on("input", function (evt) {
-  starEditor.updateMass(evt.target.value);
-});
+
 // Planet handlers
 $("#addPlanet").click(function (evt) {
   planetEditor.addPlanet();
@@ -2345,15 +2374,10 @@ $("#deletePlanet").click(function (evt) {
 $("#planet-name").on("input", function (evt) {
   planetEditor.updateName(evt.target.value);
 });
-$("#planet-mass").on("input", function (evt) {
-  planetEditor.updateMass(evt.target.value);
-});
-$("#planet-radius").on("input", function (evt) {
-  planetEditor.updateRadius(evt.target.value);
-});
 $("#planet-typeselector").change(function (evt) {
   planetEditor.updatePlanetType(evt.target.value);
 });
+
 // Orbit handlers
 $("#addOrbit").click(function (evt) {
   orbitEditor.addOrbit();
@@ -2367,21 +2391,7 @@ $("#orbit-starselector").change(function (evt) {
 $("#object-planetselector").change(function (evt) {
   orbitEditor.updatePlanetIndex(evt.target.value);
 });
-$("#object-semi-major-axis").on("input", function (evt) {
-  orbitEditor.updateSemiMajorAxis(evt.target.value);
-});
-$("#object-eccentricity").on("input", function (evt) {
-  orbitEditor.updateEccentricity(evt.target.value);
-});
-$("#object-inclination").on("input", function (evt) {
-  orbitEditor.updateInclination(evt.target.value);
-});
-$("#object-longitude-of-the-ascending-node").on("input", function (evt) {
-  orbitEditor.updateLongitudeOfTheAscendingNode(evt.target.value);
-});
-$("#object-argument-of-periapsis").on("input", function (evt) {
-  orbitEditor.updateArgumentOfPeriapsis(evt.target.value);
-});
+
 $("#addObject").click(function (evt) {
   orbitEditor.addObject();
 });
@@ -2403,33 +2413,6 @@ $("#moon-name").on("input", function (evt) {
 });
 $("#moon-typeselector").change(function (evt) {
   moonEditor.updateMoonType(evt.target.value);
-});
-$("#moon-mass").on("input", function (evt) {
-  moonEditor.updateMass(evt.target.value);
-});
-$("#moon-radius").on("input", function (evt) {
-  moonEditor.updateRadius(evt.target.value);
-});
-$("#moon-radius-2").on("input", function (evt) {
-  moonEditor.updateRadiusB(evt.target.value);
-});
-$("#moon-radius-3").on("input", function (evt) {
-  moonEditor.updateRadiusC(evt.target.value);
-});
-$("#moon-semi-major-axis").on("input", function (evt) {
-  moonEditor.updateSemiMajorAxis(evt.target.value);
-});
-$("#moon-eccentricity").on("input", function (evt) {
-  moonEditor.updateEccentricity(evt.target.value);
-});
-$("#moon-inclination").on("input", function (evt) {
-  moonEditor.updateInclination(evt.target.value);
-});
-$("#moon-longitude-of-the-ascending-node").on("input", function (evt) {
-  moonEditor.updateLongitudeOfTheAscendingNode(evt.target.value);
-});
-$("#moon-argument-of-periapsis").on("input", function (evt) {
-  moonEditor.updateArgumentOfPeriapsis(evt.target.value);
 });
 $("#addMoon").click(function (evt) {
   moonEditor.addMoon();
@@ -2459,16 +2442,27 @@ function exportUpdate() {
 }
 
 function updateExportStarsData() {
-  var data = "Name,Mass [M☉],Luminosity [L☉],Radius [R☉],Surface Temperature [T☉],Lifetime [A☉],Habitable zone (inner) [AU],Habitable zone (outer) [AU],Star Class\n";
+  var uMass=tabStar.mass.unit;
+  var uLum =tabStar.luminosity.unit;
+  var uRad =tabStar.radius.unit;
+  var uTem =tabStar.surfaceTemperature.unit;
+  var uLif =tabStar.lifetime.unit;
+  var uHabI=tabStar.habitableZoneInner.unit;
+  var uHabO=tabStar.habitableZoneOuter.unit;
+
+
+  var data = "Name,Mass ["+uMass.symbol+"],Luminosity ["+uLum.symbol+"],Radius ["+
+  uRad.symbol+"],Surface Temperature ["+uTem.symbol+"],Lifetime ["+uLif.symbol+
+  "],Habitable zone (inner) ["+uHabI.symbol+"],Habitable zone (outer) ["+uHabO.symbol+"],Star Class\n";
   for (star of starEditor.getStarlist()) {
     data+= star.name+",";
-    data+= star.mass+",";
-    data+= star.getLuminosity()+",";
-    data+= star.getRadius()+",";
-    data+= star.getTemperature()+",";
-    data+= star.getLifetime()+",";
-    data+= star.getHabitableInner()+",";
-    data+= star.getHabitableOuter()+",";
+    data+= Unit.transform(units.solarMass,uMass,star.mass)+",";
+    data+= uLum.convertToUnit(star.getLuminosity())+",";
+    data+= uRad.convertToUnit(star.getRadius())+",";
+    data+= uTem.convertToUnit(star.getTemperature())+",";
+    data+= uLif.convertToUnit(star.getLifetime())+",";
+    data+= uHabI.convertToUnit(star.getHabitableInner())+",";
+    data+= uHabO.convertToUnit(star.getHabitableOuter())+",";
     data+= star.getClass()+"\n";
   }
 
@@ -2476,18 +2470,30 @@ function updateExportStarsData() {
 }
 
 function updateExportPlanetsData() {
-  var data = "Name,Mass [M🜨],Radius [R🜨],Gravity [G🜨],Density [ρ🜨],Circumference [C🜨],Surface Area [A🜨],Volume [V🜨],Relative Escape Velocity [ve🜨],Crust Composition\n";
+  var uMass=tabPlanet.mass.unit;
+  var uRad =tabPlanet.radius.unit;
+  var uGrav=tabPlanet.gravity.unit;
+  var uDens=tabPlanet.density.unit;
+  var uCirc=tabPlanet.circumference.unit;
+  var uSurf=tabPlanet.area.unit;
+  var uVol =tabPlanet.volume.unit;
+  var uEcV =tabPlanet.escapeVelocity.unit;
+
+  var data = "Name,Mass ["+uMass.symbol+"],Radius ["+uRad.symbol+"],Planet Type,"+
+  "Gravity ["+uGrav.symbol+"],Density ["+uDens.symbol+"],Circumference ["+uCirc.symbol+
+  "],Surface Area ["+uSurf.symbol+"],Volume ["+uVol.symbol+"],Relative Escape Velocity ["+
+  uEcV.symbol+"],Crust Composition\n";
   for (planet of planetEditor.getPlanetlist()) {
     data+= planet.name+",";
-    data+= planet.mass+",";
-    data+= planet.radius+",";
+    data+= Unit.transform(units.earthMass,uMass,planet.mass)+",";
+    data+= Unit.transform(units.earthRadius,uRad,planet.radius)+",";
     data+= planetTypes[planet.planetTypeIndex].name+",";
-    data+= planet.getGravity()+",";
-    data+= planet.getDensity()+",";
-    data+= planet.getCircumference()+",";
-    data+= planet.getSurfaceArea()+",";
-    data+= planet.getVolume()+",";
-    data+= planet.getEscapeVelocity()+",";
+    data+= uGrav.convertToUnit(planet.getGravity())+",";
+    data+= uDens.convertToUnit(planet.getDensity())+",";
+    data+= uCirc.convertToUnit(planet.getCircumference())+",";
+    data+= uSurf.convertToUnit(planet.getSurfaceArea())+",";
+    data+= uVol.convertToUnit(planet.getVolume())+",";
+    data+= uEcV.convertToUnit(planet.getEscapeVelocity())+",";
 
     var comp = planet.getMakeup();
     var compText = "";
@@ -2510,23 +2516,36 @@ function updateExportPlanetsData() {
 }
 
 function updateExportOrbitsData() {
-  var data = "Star Name,Planet Name,Type,Semi Major Axis [AU],Semi Minor Axis[AU],Eccentricity,Periapsis[AU],Apoapsis[AU],Orbital Period[P🜨],Orbital Velocity[Vo🜨],Inclination[°],Longitude of the ascending node[°],Argument of Periapsis[°]\n";
+  var uSMaA= tabOrbit.semiMajorAxis.unit;
+  var uSMiA= tabOrbit.semiMinorAxis.unit;
+  var uPeri= tabOrbit.periapsis.unit;
+  var uApo = tabOrbit.apoapsis.unit;
+  var uOPer= tabOrbit.orbitalPeriod.unit;
+  var uOVel= tabOrbit.orbitalVelocity.unit;
+  var uInc = tabOrbit.inclination.unit;
+  var uLotA= tabOrbit.longitudeOfTheAscendingNode.unit;
+  var uAoP = tabOrbit.argumentOfPeriapsis.unit;
+
+  var data = "Star Name,Planet Name,Semi Major Axis ["+uSMaA.symbol+"],Semi Minor Axis["+
+  uSMiA.symbol+"],Eccentricity,Periapsis["+uPeri.symbol+"],Apoapsis["+uApo.symbol+"],Orbital Period["+uOPer.symbol+
+  "],Orbital Velocity["+uOVel.symbol+"],Inclination["+uInc.symbol+"],Longitude of the ascending node["+uLotA.symbol+
+  "],Argument of Periapsis["+uAoP.symbol+"]\n";
   for (orbit of orbitEditor.getOrbitlist()) {
     var star = starEditor.getStar(orbit.starIndex)
     var sName = star.name;
     for (object of orbit.objects) {
       data+= sName+",";
       data+= planetEditor.getPlanet(object.planetIndex).name+",";
-      data+= object.semiMajorAxis+",";
-      data+= object.getSemiMinorAxis()+",";
+      data+= Unit.transform(units.au,uSMaA,object.semiMajorAxis)+",";
+      data+= uSMiA.convertToUnit(object.getSemiMinorAxis())+",";
       data+= object.eccentricity+",";
-      data+= object.getPeriapsis()+",";
-      data+= object.getApoapsis()+",";
-      data+= object.getOrbitalPeriod(star)+",";
-      data+= object.getOrbitalVelocity(star)+",";
-      data+= object.inclination+",";
-      data+= object.longitudeOfTheAscendingNode+",";
-      data+= object.argumentOfPeriapsis+"\n";
+      data+= uPeri.convertToUnit(object.getPeriapsis())+",";
+      data+= uApo.convertToUnit(object.getApoapsis())+",";
+      data+= uOPer.convertToUnit(object.getOrbitalPeriod(star))+",";
+      data+= uOVel.convertToUnit(object.getOrbitalVelocity(star))+",";
+      data+= Unit.transform(units.degrees,uInc,object.inclination)+",";
+      data+= Unit.transform(units.degrees,uLotA,object.longitudeOfTheAscendingNode)+",";
+      data+= Unit.transform(units.degrees,uAoP,object.argumentOfPeriapsis)+"\n";
     }
   }
 
@@ -2541,8 +2560,28 @@ function updateExportMoonsData() {
   }
   document.getElementById("exportMoons").style.display = "initial";
 
+  var uMass = tabMoon.mass.unit;
+  var uRad1 = tabMoon.radius.unit;
+  var uRad2 = tabMoon.radiusB.unit;
+  var uRad3 = tabMoon.radiusC.unit;
+  var uDens = tabMoon.density.unit;
+  var uGrav = tabMoon.surfaceGravity.unit;
+  var uSMaA = tabMoon.semiMajorAxis.unit;
+  var uSMiA = tabMoon.semiMinorAxis.unit;
+  var uPeri = tabMoon.periapsis.unit;
+  var uApo  = tabMoon.apoapsis.unit;
+  var uOPer = tabMoon.orbitalPeriod.unit;
+  var uOVel = tabMoon.orbitalVelocity.unit;
+  var uInc  = tabMoon.inclination.unit;
+  var uLotA = tabMoon.longitudeOfTheAscendingNode.unit;
+  var uAoP  = tabMoon.argumentOfPeriapsis.unit;
 
-  var data = "Planet Name,Moon Name,Type,Mass [M☾︎],Radius A [R☾︎],Radius B [R☾︎], Radius C [R☾︎],Density [ρ☾︎],Composition,Gravity [G☾︎],Semi Major Axis [LD],Semi Minor Axis [LD],Eccentricity,Periapsis [LD],Apoapsis [LD],Orbital Period [P☾︎],Orbital Velocity [V☾︎],Inclination [°],Longitude Of The Ascending Node [°],Argument Of Periapsis [°]\n";
+  var data = "Planet Name,Moon Name,Type,Mass ["+uMass.symbol+"],Radius A ["+uRad1.symbol+
+  "],Radius B ["+uRad2.symbol+"], Radius C ["+uRad3.symbol+"],Density ["+uDens.symbol+
+  "],Composition,Gravity ["+uGrav.symbol+"],Semi Major Axis ["+uSMaA.symbol+"],Semi Minor Axis ["+
+  uSMiA.symbol+"],Eccentricity,Periapsis ["+uPeri.symbol+"],Apoapsis ["+uApo.symbol+"],Orbital Period ["+
+  uOPer.symbol+"],Orbital Velocity ["+uOVel.symbol+"],Inclination ["+uInc.symbol+
+  "],Longitude Of The Ascending Node ["+uLotA.symbol+"],Argument Of Periapsis ["+uAoP.symbol+"]\n";
   var sysList = moonEditor.getSystemlist();
   for (system of sysList) {
     var cPlanet = planetEditor.getPlanet(system.getCenterObject().planetIndex);
@@ -2551,11 +2590,11 @@ function updateExportMoonsData() {
       data+= pName + ",";
       data+= moon.name + ",";
       data+= moonTypes[moon.typeIndex].name + ",";
-      data+= moon.mass + ",";
-      data+= moon.radius + ",";
-      data+= moon.radius2 + ",";
-      data+= moon.radius3 + ",";
-      data+= moon.getDensity() + ",";
+      data+= Unit.transform(units.lunarMass,uMass,moon.mass) + ",";
+      data+= Unit.transform(units.lunarRadius,uRad1,moon.radius) + ",";
+      data+= Unit.transform(units.lunarRadius,uRad2,moon.radius2) + ",";
+      data+= Unit.transform(units.lunarRadius,uRad3,moon.radius3) + ",";
+      data+= uDens.convertToUnit(moon.getDensity()) + ",";
 
       var comp = moon.getMakeup();
       var compText = "";
@@ -2571,17 +2610,17 @@ function updateExportMoonsData() {
       }
       data += compText.trim()+",";
 
-      data+= moon.getGravity() + ",";
-      data+= moon.semiMajorAxis + ",";
-      data+= moon.getSemiMinorAxis() + ",";
+      data+= uGrav.convertToUnit(moon.getGravity()) + ",";
+      data+= Unit.transform(units.lunarDistance,uSMaA,moon.semiMajorAxis) + ",";
+      data+= uSMiA.convertToUnit(moon.getSemiMinorAxis()) + ",";
       data+= moon.eccentricity + ",";
-      data+= moon.getPeriapsis() + ",";
-      data+= moon.getApoapsis() + ",";
-      data+= moon.getOrbitalPeriod(cPlanet) + ",";
-      data+= moon.getOrbitalVelocity(cPlanet) + ",";
-      data+= moon.inclination + ",";
-      data+= moon.longitudeOfTheAscendingNode + ",";
-      data+= moon.argumentOfPeriapsis + "\n";
+      data+= uPeri.convertToUnit(moon.getPeriapsis()) + ",";
+      data+= uApo.convertToUnit(moon.getApoapsis()) + ",";
+      data+= uOPer.convertToUnit(moon.getOrbitalPeriod(cPlanet)) + ",";
+      data+= uOVel.convertToUnit(moon.getOrbitalVelocity(cPlanet)) + ",";
+      data+= Unit.transform(units.degrees,uInc,moon.inclination) + ",";
+      data+= Unit.transform(units.degrees,uLotA,moon.longitudeOfTheAscendingNode) + ",";
+      data+= Unit.transform(units.degrees,uAoP,moon.argumentOfPeriapsis) + "\n";
     }
   }
   document.getElementById("exportMoons").href = 'data:text/plain;charset=utf-8,'+ encodeURIComponent(data);
@@ -2615,7 +2654,18 @@ function updateList(listID, listArray, textFunction, onclickCallback, currentSel
   }
 }
 
-function invalidate(prefix) {
+function invalidate(tab) {
+  for (var field in tab) {
+    if (tab.hasOwnProperty(field)) {
+      if(tab[field].__proto__.hasOwnProperty("invalidate")) {
+        tab[field].invalidate();
+      }
+    }
+  }
+}
+
+
+function oldInvalidate(prefix) {
   var out = document.getElementsByClassName("output");
   for (elem of out) {
     if(elem.id.startsWith(prefix)) {
@@ -2765,7 +2815,7 @@ compositions.push(new Composition([["Hydrogen",1]]));
 var interpolator = new DataInterpolator(dataplots,compositions);
 /* Save, Load and Init */
 function init() {
-  var typeSelector =document.getElementById("planet-typeselector");
+  var typeSelector = tabPlanet.typeSelector;
   clearList(typeSelector);
   i = 0;
   for (var type of planetTypes) {
@@ -2777,7 +2827,7 @@ function init() {
       i++;
   }
 
-  typeSelector =document.getElementById("moon-typeselector");
+  typeSelector = tabMoon.typeSelector;
   clearList(typeSelector);
   i = 0;
   for (var type of moonTypes) {
@@ -3004,3 +3054,246 @@ function deactivateTab(tabName) {
     }
   }
 }
+/*Collection of fields*/
+//Default & Test Callbackfunctions
+var updatePrinter = function(x) {console.log(x);};
+var updateIgnorer  = function(x) {return;};
+var unitText = function(x) {return x.symbol;};
+var defaultDescription = function(x) {return "";};
+
+// TODO: Replace hard coded Functions
+/*  var callback = function(x) {
+    var conv = unit.convertToUnit(x);
+    callfunc(conv);
+  };
+  return callback;
+}*/
+
+//Star
+var starMassText = function(x) {
+  var limit = roundExp(Unit.transform(units.solarMass,x,0.08));
+  return "At least "+limit+x.symbol;
+}
+
+var starMassCallback = function(x) {
+  var solarMass = units.solarMass.convertToUnit(x);
+  starEditor.updateMass(solarMass);
+}
+
+var tabStar = {
+  name              : document.getElementById("star-name"),
+  mass              : generateField("star-mass"           , "Mass"                  , starMassCallback  , starMassText      , units.getMassUnits()       ,3),
+  luminosity        : generateField("star-luminosity"     , "Luminosity"            , undefined         , defaultDescription, units.getLuminosityUnits() ,1),
+  radius            : generateField("star-radius"         , "Radius"                , undefined         , defaultDescription, units.getLengthUnits()     ,4),
+  surfaceTemperature: generateField("star-temperature"    , "Temperauture"          , undefined         , defaultDescription, units.getTemperatureUnits(),3),
+  lifetime          : generateField("star-lifetime"       , "Lifetime"              , undefined         , defaultDescription, units.getTimeUnits()       ,3),
+  habitableZoneInner: generateField("star-habitable-inner", "Habitable zone (inner)", undefined         , defaultDescription, units.getLengthUnits()     ,2),
+  habitableZoneOuter: generateField("star-habitable-outer", "Habitable zone (outer)", undefined         , defaultDescription, units.getLengthUnits()     ,2),
+  starClass         : document.getElementById("star-class"),
+  habitability      : document.getElementById("star-habitability")
+};
+
+//Planet
+var planetMassText = function(x) {
+  var lowerMass = roundExp(Unit.transform(units.earthMass, x, 0.1));
+  var upperMass = roundExp(Unit.transform(units.earthMass, x, 4000));
+  var sym = " "+x.symbol;
+  return "Between "+lowerMass+sym+" and "+upperMass+sym;
+}
+
+var planetMassCallback = function(x) {
+  var earthMass = units.earthMass.convertToUnit(x);
+  planetEditor.updateMass(earthMass);
+}
+
+var planetRadiusText = function(x) {
+  var lowerRad = roundExp(Unit.transform(units.earthRadius, x, 0.5));
+  var upperRad = roundExp(Unit.transform(units.earthRadius, x, 20));
+  var sym = " "+x.symbol;
+  return "Between "+lowerRad+sym+" and "+upperRad+sym;
+}
+
+var planetRadiusCallback = function(x) {
+  var earthRadius = units.earthRadius.convertToUnit(x);
+  planetEditor.updateRadius(earthRadius);
+}
+
+
+var tabPlanet = {
+  name          : document.getElementById("planet-name"),
+  mass          : generateField("planet-mass"           , "Mass"                    , planetMassCallback  , planetMassText    , units.getMassUnits()    ,5),
+  radius        : generateField("planet-radius"         , "Radius"                  , planetRadiusCallback, planetRadiusText  , units.getLengthUnits()  ,6),
+  typeSelector  : document.getElementById("planet-typeselector"),
+  gravity       : generateField("planet-gravity"        , "Gravity"                 , undefined           , defaultDescription, units.getGravityUnits() ,4),
+  density       : generateField("planet-density"        , "Density"                 , undefined           , defaultDescription, units.getDensityUnits() ,4),
+  circumference : generateField("planet-circumference"  , "Circumference"           , undefined           , defaultDescription, units.getLengthUnits()  ,11),
+  area          : generateField("planet-area"           , "Surface Area"            , undefined           , defaultDescription, units.getAreaUnits()    ,5),
+  volume        : generateField("planet-volume"         , "Volume"                  , undefined           , defaultDescription, units.getVolumeUnits()  ,5),
+  escapeVelocity: generateField("planet-escape-velocity", "Relative Escape Velocity", undefined           , defaultDescription, units.getVelocityUnits(),8),
+  habitability  : document.getElementById("planet-habitability"),
+  composition   : document.getElementById("planet-composition")
+};
+
+
+var orbitSemiMajorAxisCallback = function(x) {
+  var auAxis = units.au.convertToUnit(x);
+  orbitEditor.updateSemiMajorAxis(auAxis);
+};
+
+var orbitEccentricityText = function(x) {
+  return "Less than 1";
+};
+
+var orbitEccentricityCallback = function(x) {
+  orbitEditor.updateEccentricity(x);
+};
+
+var orbitInclinationCallback = function(x) {
+  var inclinationDegree = units.degrees.convertToUnit(x);
+  orbitEditor.updateInclination(x);
+};
+
+var orbitInclinationText = function(x) {
+  var lower = Unit.transform(units.degrees,x,0);
+  var upper = round(Unit.transform(units.degrees,x,180));
+  return "Between "+lower+" and "+upper;
+};
+
+var orbitLotanCallback = function(x) {
+  var LotanDegree = units.degrees.convertToUnit(x);
+  orbitEditor.updateLongitudeOfTheAscendingNode(x);
+};
+
+var orbitAopCallback = function(x) {
+  var AopDegree = units.degrees.convertToUnit(x);
+  orbitEditor.updateArgumentOfPeriapsis(x);
+};
+
+var orbitAngleText = function(x) {
+  var lower = round(Unit.transform(units.degrees,x,0));
+  var upper = round(Unit.transform(units.degrees,x,360));
+  return "Between "+lower+" and "+upper;
+};
+
+//Orbit
+var tabOrbit = {
+  starSelector                : document.getElementById("orbit-starselector"),
+  boundaries                  : generateRangeField("orbit-boundaries", "System Boundaries", defaultDescription, units.getLengthUnits()   ,2),
+  habitableZone               : generateRangeField("orbit-habitable", "Habitable Zone", defaultDescription, units.getLengthUnits()   ,2),
+  planetSelector              : document.getElementById("object-planetselector"),
+  frostline                   : generateField("orbit-frostline"                       , "Frost line"                      , undefined                     , defaultDescription      , units.getLengthUnits()   ,2),
+  semiMajorAxis               : generateField("object-semi-major-axis"                , "Semi Major Axis"                 , orbitSemiMajorAxisCallback    , defaultDescription      , units.getLengthUnits()   ,2),
+  semiMinorAxis               : generateField("object-semi-minor-axis"                , "Semi Minor Axis"                 , undefined                     , defaultDescription      , units.getLengthUnits()   ,2),
+  eccentricity                : generateField("object-eccentricity"                   , "Eccentricity"                    , orbitEccentricityCallback     , orbitEccentricityText   , []                       ,0),
+  periapsis                   : generateField("object-periapsis"                      , "Periapsis"                       , undefined                     , defaultDescription      , units.getLengthUnits()   ,2),
+  apoapsis                    : generateField("object-apoapsis"                       , "Apoapsis"                        , undefined                     , defaultDescription      , units.getLengthUnits()   ,2),
+  orbitalPeriod               : generateField("object-orbital-period"                 , "Orbital Period"                  , undefined                     , defaultDescription      , units.getTimeUnits()     ,6),
+  orbitalVelocity             : generateField("object-orbital-velocity"               , "Orbital Velocity"                , undefined                     , defaultDescription      , units.getVelocityUnits() ,4),
+  inclination                 : generateField("object-inclination"                    , "Inclination"                     , orbitInclinationCallback      , orbitInclinationText    , units.getAngleUnits()    ,0),
+  longitudeOfTheAscendingNode : generateField("object-longitude-of-the-ascending-node", "Longitude of the ascending node" , orbitLotanCallback            , orbitAngleText          , units.getAngleUnits()    ,0),
+  argumentOfPeriapsis         : generateField("object-argument-of-periapsis"          , "Argument of Periapsis"           , orbitAopCallback              , orbitAngleText          , units.getAngleUnits()    ,0),
+  orbitalAnalysis             : document.getElementById("orbit-analysis")
+};
+
+var moonMassCallback = function(x) {
+  var lunarMass = units.lunarMass.convertToUnit(x);
+  moonEditor.updateMass(lunarMass);
+}
+
+
+var tabMoon = {};
+
+var moonRadiusText = function(x) {
+  var maxRad = round(x.convertToUnit(tabMoon.allowedMaxRad));
+  return "less than "+maxRad;
+}
+
+var moonRadiusCallback = function(x) {
+  var lunarRadius = units.lunarRadius.convertToUnit(x);
+  moonEditor.updateRadius(lunarRadius);
+}
+
+var moonRadius2Callback = function(x) {
+  var lunarRadius = units.lunarRadius.convertToUnit(x);
+  moonEditor.updateRadiusB(lunarRadius);
+}
+
+var moonRadius3Callback = function(x) {
+  var lunarRadius = units.lunarRadius.convertToUnit(x);
+  moonEditor.updateRadiusC(lunarRadius);
+}
+
+var moonSmaCallback = function(x) {
+  var lunarDistance = units.lunarDistance.convertToUnit(x);
+  moonEditor.updateSemiMajorAxis(lunarDistance);
+}
+
+var moonEccCallback = function(x) {
+  moonEditor.updateEccentricity(x);
+}
+
+var moonIncCallback = function(x) {
+  var degrees = units.degrees.convertToUnit(x);
+  moonEditor.updateInclination(degrees);
+}
+
+var moonLotanCallback = function(x) {
+  var degrees = units.degrees.convertToUnit(x);
+  moonEditor.updateLongitudeOfTheAscendingNode(degrees);
+}
+
+var moonAopCallback = function(x) {
+  var degrees = units.degrees.convertToUnit(x);
+  moonEditor.updateArgumentOfPeriapsis(degrees);
+}
+
+//Moon
+tabMoon = {
+  planetSelector              : document.getElementById("system-planetselector"),
+  hillsphere                  : generateRangeField("system-hillsphere"              ,"Hill sphere"                    ,defaultDescription ,units.getLengthUnits(),10),
+  name                        : document.getElementById("moon-name"),
+  typeSelector                : document.getElementById("moon-typeselector"),
+  mass                        : generateField("moon-mass"                           ,"Mass"                           ,moonMassCallback   ,defaultDescription,units.getMassUnits(),4),
+  allowedMaxRad               : 0,
+  radius                      : generateField("moon-radius"                         ,"Radius"                         ,moonRadiusCallback ,moonRadiusText,units.getLengthUnits(),5),
+  radiusB                     : generateField("moon-radius-2"                       ,"Radius Axis B"                  ,moonRadius2Callback,moonRadiusText,units.getLengthUnits(),5),
+  radiusC                     : generateField("moon-radius-3"                       ,"Radius Axis C"                  ,moonRadius3Callback,moonRadiusText,units.getLengthUnits(),5),
+  form                        : document.getElementById("moon-form"),
+  density                     : generateField("moon-density"                        ,"Density"                        ,undefined          ,defaultDescription,units.getDensityUnits(),3),
+  composition                 : document.getElementById("moon-composition"),
+  surfaceGravity              : generateField("moon-gravity"                        ,"Surface Gravity"                ,undefined          ,defaultDescription,units.getGravityUnits(),3),
+  semiMajorAxis               : generateField("moon-semi-major-axis"                ,"Semi Major Axis"                ,moonSmaCallback    ,defaultDescription,units.getLengthUnits(),10),
+  semiMinorAxis               : generateField("moon-semi-minor-axis"                ,"Semi Minor Axis"                ,undefined          ,defaultDescription,units.getLengthUnits(),10),
+  eccentricity                : generateField("moon-eccentricity"                   ,"Eccentricity"                   ,moonEccCallback    ,orbitEccentricityText,[],0),
+  periapsis                   : generateField("moon-periapsis"                      ,"Periapsis"                      ,undefined          ,defaultDescription,units.getLengthUnits(),10),
+  apoapsis                    : generateField("moon-apoapsis"                       ,"Apoapsis"                       ,undefined          ,defaultDescription,units.getLengthUnits(),10),
+  orbitalPeriod               : generateField("moon-orbital-period"                 ,"Orbital Period"                 ,undefined          ,defaultDescription,units.getTimeUnits(),4),
+  orbitalVelocity             : generateField("moon-orbital-velocity"               ,"Orbital Velocity"               ,undefined          ,defaultDescription,units.getVelocityUnits(),3),
+  inclination                 : generateField("moon-inclination"                    ,"Inclination"                    ,moonIncCallback    ,orbitInclinationText,units.getAngleUnits(),0),
+  longitudeOfTheAscendingNode : generateField("moon-longitude-of-the-ascending-node","Longitude of the ascending node",moonLotanCallback  ,orbitAngleText,units.getAngleUnits(),0),
+  argumentOfPeriapsis         : generateField("moon-argument-of-periapsis"          ,"Argument of periapsis"          ,moonAopCallback    ,orbitAngleText,units.getAngleUnits(),0)
+};
+
+//Helper Vars for Invalidation
+tabMoonSystem = {
+  hillsphere:tabMoon.hillsphere
+};
+
+tabMoonMoon = {
+  mass: tabMoon.mass,
+  radius:tabMoon.radius,
+  radiusB:tabMoon.radiusB,
+  radiusC:tabMoon.radiusC,
+  density:tabMoon.density,
+  surfaceGravity:tabMoon.surfaceGravity,
+  semiMajorAxis:tabMoon.semiMajorAxis,
+  semiMinorAxis:tabMoon.semiMinorAxis,
+  eccentricity:tabMoon.eccentricity,
+  periapsis:tabMoon.periapsis,
+  apoapsis:tabMoon.apoapsis,
+  orbitalPeriod:tabMoon.orbitalPeriod,
+  orbitalVelocity:tabMoon.orbitalVelocity,
+  inclination:tabMoon.inclination,
+  longitudeOfTheAscendingNode:tabMoon.longitudeOfTheAscendingNode,
+  argumentOfPeriapsis:tabMoon.argumentOfPeriapsis
+};
