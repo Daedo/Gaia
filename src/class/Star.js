@@ -1,48 +1,54 @@
 /* Star */
 class Star {
-  constructor(name,mass) {
+  constructor(name,solarMass) {
     if(name === undefined) {
       name = "Stary McStarface";
     }
 
-    if(mass === undefined) {
-      mass = 1;
+    if(solarMass === undefined) {
+      solarMass = 1;
     }
 
     this.name = name;
-    this.mass = mass;
+    this.mass = solarMass;
   }
 
   setName(name) {
     this.name = name;
   }
 
-  setMass(mass) {
-    this.mass = mass;
+  setMass(solarMass) {
+    this.mass = solarMass;
   }
 
   getLuminosity() {
-    return round(Math.pow(this.mass,3));
+    var solarLuminosity = Math.pow(this.mass,3);
+    return round(units.solarLuminosity.convertToUnitless(solarLuminosity));
   }
 
   getRadius() {
-    return round(Math.pow(this.mass,0.74));
+    var solarRadius = Math.pow(this.mass,0.74);
+    return round(units.solarRadius.convertToUnitless(solarRadius));
   }
 
   getTemperature() {
-    return round(Math.pow(this.mass,0.505));
+    var solarTemperature = Math.pow(this.mass,0.505)
+    return round(units.solarTemperature.convertToUnitless(solarTemperature));
   }
 
   getLifetime() {
-    return round(Math.pow(this.mass,-2.5));
+    var solarLifetime = Math.pow(this.mass,-2.5)
+    return round(units.lifetimeSun.convertToUnitless(solarLifetime));
   }
 
   getHabitableInner() {
-    return round(Math.pow(this.mass,3/2)*0.95);
+    var innerAU = Math.pow(this.mass,3/2)*0.95;
+    return round(units.au.convertToUnitless(innerAU));
   }
 
   getHabitableOuter() {
-    return round(Math.pow(this.mass,3/2)*1.37);
+    var outerAU = Math.pow(this.mass,3/2)*1.37;
+    return round(units.au.convertToUnitless(outerAU));
   }
 
   getClass() {
@@ -71,23 +77,9 @@ class Star {
   }
 
   getColor() {
-    var kelvinTemp = this.getTemperature()*5772;
+    var kelvinTemp = this.getTemperature();
 
     return rgbFromKelvinTemp(kelvinTemp)
-
-
-
-    /*switch (this.getClass()) {
-      case "O": return "#9bb0ff";
-      case "B": return "#aabfff";
-      case "A": return "#e4e8fc";
-      case "F": return "#f9fae7";
-      case "G": return "#fdf9b3";
-      case "K": return "#ffd870";
-      case "M": return "#fbc886";
-      default:  return "#ffffff";
-
-    }*/
   }
 
   getHabitability() {
@@ -106,15 +98,18 @@ class Star {
 
   //Orbit Functions
   getFrostline() {
-    return round(4.85*Math.sqrt(Math.pow(this.mass,3)));
+    var frostlineAU = 4.85*Math.sqrt(Math.pow(this.mass,3));
+    return round(units.au.convertToUnitless(frostlineAU));
   }
 
   getInnerLimit() {
-    return round(0.1*this.mass);
+    var innerLimitAU = 0.1*this.mass;
+    return round(units.au.convertToUnitless(innerLimitAU));
   }
 
   getOuterLimit() {
-    return round(40*this.mass);
+    var outerLimitAU = 40*this.mass;
+    return round(units.au.convertToUnitless(outerLimitAU));
   }
 }
 
@@ -167,16 +162,19 @@ var starEditor =  {
     if(index >= 0 && index < this.stars.length) {
       this.index = index;
 
-      document.getElementById("star-name").value = this.getCurrent().name;
-      document.getElementById("star-mass").value = this.getCurrent().mass;
+      var currentStar = this.getCurrent();
+      tabStar.name.value = currentStar.name;
+      var unitlessMass = units.solarMass.convertToUnitless(currentStar.mass)
+      tabStar.mass.setUnitlessValue(unitlessMass);
 
       this.updateView();
     }
   },
 
   invalidateFields() {
-    invalidate("star");
-    document.getElementById("star-class").innerHTML = "Not a star.";
+    //invalidate("star");
+    invalidate(tabStar);
+    tabStar.starClass.innerHTML = "Not a star.";
   },
 
   updateView() {
@@ -184,14 +182,15 @@ var starEditor =  {
     this.updateSelector();
 
     var star = this.getCurrent();
-    document.getElementById("star-luminosity").innerHTML      = star.getLuminosity()+" L☉";
-    document.getElementById("star-radius").innerHTML          = star.getRadius()+" R☉";
-    document.getElementById("star-temperature").innerHTML     = star.getTemperature()+" T☉";
-    document.getElementById("star-lifetime").innerHTML        = star.getLifetime()+" A☉";
-    document.getElementById("star-habitable-inner").innerHTML = star.getHabitableInner()+" AU";
-    document.getElementById("star-habitable-outer").innerHTML = star.getHabitableOuter()+" AU";
-    document.getElementById("star-class").innerHTML           = star.getClass();
-    document.getElementById("star-habitability").innerHTML    = star.getHabitability();
+
+    tabStar.luminosity.setUnitlessValue(star.getLuminosity());
+    tabStar.radius.setUnitlessValue(star.getRadius());
+    tabStar.surfaceTemperature.setUnitlessValue(star.getTemperature());
+    tabStar.lifetime.setUnitlessValue(star.getLifetime());
+    tabStar.habitableZoneInner.setUnitlessValue(star.getHabitableInner());
+    tabStar.habitableZoneOuter.setUnitlessValue(star.getHabitableOuter());
+    tabStar.starClass.innerHTML     = star.getClass();
+    tabStar.habitability.innerHTML  = star.getHabitability();
 
     this.redraw();
   },
@@ -236,7 +235,7 @@ var starEditor =  {
     ctx.fill();
     ctx.stroke();
 
-    var rStar  = rSun * star.getRadius();
+    var rStar  = rSun * units.solarRadius.convertToUnit(star.getRadius());
     var xStar  = xSun+rSun+40+rStar*0.5;
     var yStar  = ySun+rSun-rStar;
 

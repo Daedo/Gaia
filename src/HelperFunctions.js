@@ -27,7 +27,18 @@ function updateList(listID, listArray, textFunction, onclickCallback, currentSel
   }
 }
 
-function invalidate(prefix) {
+function invalidate(tab) {
+  for (var field in tab) {
+    if (tab.hasOwnProperty(field)) {
+      if(tab[field].__proto__.hasOwnProperty("invalidate")) {
+        tab[field].invalidate();
+      }
+    }
+  }
+}
+
+
+function oldInvalidate(prefix) {
   var out = document.getElementsByClassName("output");
   for (elem of out) {
     if(elem.id.startsWith(prefix)) {

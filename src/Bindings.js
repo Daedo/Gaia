@@ -17,9 +17,9 @@ $("#deleteStar").click(function (evt) {
 $("#star-name").on("input", function (evt) {
   starEditor.updateName(evt.target.value);
 });
-$("#star-mass").on("input", function (evt) {
+/*$("#star-mass").on("input", function (evt) {
   starEditor.updateMass(evt.target.value);
-});
+});*/
 // Planet handlers
 $("#addPlanet").click(function (evt) {
   planetEditor.addPlanet();
@@ -30,12 +30,12 @@ $("#deletePlanet").click(function (evt) {
 $("#planet-name").on("input", function (evt) {
   planetEditor.updateName(evt.target.value);
 });
-$("#planet-mass").on("input", function (evt) {
+/*$("#planet-mass").on("input", function (evt) {
   planetEditor.updateMass(evt.target.value);
 });
 $("#planet-radius").on("input", function (evt) {
   planetEditor.updateRadius(evt.target.value);
-});
+});*/
 $("#planet-typeselector").change(function (evt) {
   planetEditor.updatePlanetType(evt.target.value);
 });
@@ -52,7 +52,7 @@ $("#orbit-starselector").change(function (evt) {
 $("#object-planetselector").change(function (evt) {
   orbitEditor.updatePlanetIndex(evt.target.value);
 });
-$("#object-semi-major-axis").on("input", function (evt) {
+/*$("#object-semi-major-axis").on("input", function (evt) {
   orbitEditor.updateSemiMajorAxis(evt.target.value);
 });
 $("#object-eccentricity").on("input", function (evt) {
@@ -66,7 +66,7 @@ $("#object-longitude-of-the-ascending-node").on("input", function (evt) {
 });
 $("#object-argument-of-periapsis").on("input", function (evt) {
   orbitEditor.updateArgumentOfPeriapsis(evt.target.value);
-});
+});*/
 $("#addObject").click(function (evt) {
   orbitEditor.addObject();
 });
@@ -89,7 +89,7 @@ $("#moon-name").on("input", function (evt) {
 $("#moon-typeselector").change(function (evt) {
   moonEditor.updateMoonType(evt.target.value);
 });
-$("#moon-mass").on("input", function (evt) {
+/*$("#moon-mass").on("input", function (evt) {
   moonEditor.updateMass(evt.target.value);
 });
 $("#moon-radius").on("input", function (evt) {
@@ -115,7 +115,7 @@ $("#moon-longitude-of-the-ascending-node").on("input", function (evt) {
 });
 $("#moon-argument-of-periapsis").on("input", function (evt) {
   moonEditor.updateArgumentOfPeriapsis(evt.target.value);
-});
+});*/
 $("#addMoon").click(function (evt) {
   moonEditor.addMoon();
 });

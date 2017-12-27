@@ -1,6 +1,6 @@
 /* Save, Load and Init */
 function init() {
-  var typeSelector =document.getElementById("planet-typeselector");
+  var typeSelector = tabPlanet.typeSelector;
   clearList(typeSelector);
   i = 0;
   for (var type of planetTypes) {
@@ -12,7 +12,7 @@ function init() {
       i++;
   }
 
-  typeSelector =document.getElementById("moon-typeselector");
+  typeSelector = tabMoon.typeSelector;
   clearList(typeSelector);
   i = 0;
   for (var type of moonTypes) {

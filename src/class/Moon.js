@@ -106,7 +106,7 @@ class Moon {
   }
 
   getMakeup() {
-    var trueDensity = this.getDensity()*3.344;
+    var trueDensity = this.getDensity()/1000;//*3.344;
     var density = new Map([["Iron",7.87],["Silicate",3.25],["Water",0.93],["Helium",0.000179],["Hydrogen",0.0000899]])
 
     var varPoints = [
@@ -174,41 +174,54 @@ class Moon {
   }
 
   getGravity() {
+    var avgRad;
     if(moonTypes[this.typeIndex].name === "Major Moon") {
-      return round(this.mass/this.radius/this.radius);
+      avgRad = this.radius;
+    } else {
+      avgRad = (this.radius + this.radius2 + this.radius3)/3;
     }
-    var avgRad = (this.radius + this.radius2 + this.radius3)/3;
-    return round(this.mass / avgRad/avgRad);
+
+    var lunarGravity = this.mass/avgRad/avgRad;
+    return round(units.lunarGravity.convertToUnitless(lunarGravity));
   }
 
   getDensity() {
+    var volume = 1;
     if(moonTypes[this.typeIndex].name === "Major Moon") {
-      return round(this.getGravity()/this.radius);
+      volume = (this.radius*this.radius*this.radius);
+    } else {
+      volume = (this.radius*this.radius2*this.radius3);
     }
-    return this.mass/this.radius / this.radius2 / this.radius3;
 
+    var lunarDensity = this.mass/volume;
+    return round(units.lunarDensity.convertToUnitless(lunarDensity));
   }
 
   getSemiMinorAxis() {
-    return round(this.semiMajorAxis*Math.sqrt(1 - (this.eccentricity*this.eccentricity)));
+    var smaLunar = this.semiMajorAxis*Math.sqrt(1 - (this.eccentricity*this.eccentricity));
+    return round(units.lunarDistance.convertToUnitless(smaLunar));
   }
 
   getPeriapsis() {
-    return round(this.semiMajorAxis*(1 - this.eccentricity));
+    var periapsisLunar = this.semiMajorAxis*(1 - this.eccentricity);
+    return round(units.lunarDistance.convertToUnitless(periapsisLunar));
   }
 
   getApoapsis() {
-    return round(this.semiMajorAxis*(1 + this.eccentricity));
+    var apoapsisLunar = this.semiMajorAxis*(1 + this.eccentricity);
+    return round(units.lunarDistance.convertToUnitless(apoapsisLunar));
   }
 
   getOrbitalPeriod(planet) {
     var mP = planet.getPlanetMassInLunarMasses()
-    return round(Math.sqrt(this.semiMajorAxis*this.semiMajorAxis*this.semiMajorAxis/mP)/0.11090536506409417);
+    var lunarPeriod = Math.sqrt(this.semiMajorAxis*this.semiMajorAxis*this.semiMajorAxis/mP)/0.11090536506409417;
+    return round(units.earthMonth.convertToUnitless(lunarPeriod));
   }
 
   getOrbitalVelocity(planet) {
-    var mP = planet.getPlanetMassInLunarMasses()
-    return round(Math.sqrt(mP/this.semiMajorAxis)/9.016696);
+    var mP = planet.getPlanetMassInLunarMasses();
+    var lunarVelocity = Math.sqrt(mP/this.semiMajorAxis)/9.016696;
+    return round(units.lunarVelocity.convertToUnitless(lunarVelocity));
   }
 };
 
@@ -247,7 +260,7 @@ var moonEditor = {
   },
 
   invalidateFields() {
-    invalidate("system");
+    invalidate(tabMoonSystem);
   },
 
   updateView() {
@@ -267,17 +280,16 @@ var moonEditor = {
     this.updateLists();
     var currentSystem = this.getCurrent();
 
-
-    //TODO Update Selector
     orbitEditor.updateSelector();
     var value = this.getCurrent().orbitIndex+","+this.getCurrent().objectIndex;
-    document.getElementById("system-planetselector").value = value;
-
+    tabMoon.planetSelector.value = value;
 
     var centerObject = currentSystem.getCenterObject();
     var centerStar   = currentSystem.getCenterStar()
     var centerPlanet = planetEditor.getPlanet(centerObject.planetIndex);
-    document.getElementById("system-hillsphere").innerHTML = centerPlanet.getHillSphereInner()+" Lunar Distances - "+centerPlanet.getHillSphereOuter(centerObject,centerStar)+" Lunar Distances";
+    var hillLower = units.lunarDistance.convertToUnitless(centerPlanet.getHillSphereInner());
+    var hillUpper = units.lunarDistance.convertToUnitless(centerPlanet.getHillSphereOuter(centerObject,centerStar));
+    tabMoon.hillsphere.setUnitlessValues(hillLower,hillUpper);
 
     var trs = document.querySelectorAll(".moonTR, .minorMoonTR");
     for (tr of trs) {
@@ -295,25 +307,23 @@ var moonEditor = {
     if(this.moonIndex > -1) {
       var currentMoon = this.getCurrentMoon();
 
-      var inp = document.getElementsByClassName("radInp");
-      for (rad of inp) {
-        if(rad.childNodes.length>=2) {
-          rad.removeChild(rad.childNodes[1]);
-        }
-        var maxRad = centerPlanet.getPlanetRadiusInLunarRadii();
-        var textnode = document.createTextNode(" less than "+maxRad+" R☾︎");
-        rad.appendChild(textnode);
-      }
+      var maxRadUnitless = units.lunarRadius.convertToUnitless(centerPlanet.getPlanetRadiusInLunarRadii());
+      tabMoon.allowedMaxRad = maxRadUnitless;
+      tabMoon.radius.updateDescription();
+      tabMoon.radiusB.updateDescription();
+      tabMoon.radiusC.updateDescription();
 
-      document.getElementById("moon-form").innerHTML            = currentMoon.getForm();
-      document.getElementById("moon-density").innerHTML         = currentMoon.getDensity() + " ρ☾︎";
-      document.getElementById("moon-composition").innerHTML     = currentMoon.getComposition();
-      document.getElementById("moon-gravity").innerHTML         = currentMoon.getGravity() + " G☾︎";
-      document.getElementById("moon-semi-minor-axis").innerHTML = currentMoon.getSemiMinorAxis()+ " Lunar Distances";
-      document.getElementById("moon-periapsis").innerHTML       = currentMoon.getPeriapsis()+ " Lunar Distances";
-      document.getElementById("moon-apoapsis").innerHTML        = currentMoon.getApoapsis()+ " Lunar Distances";
-      document.getElementById("moon-orbital-period").innerHTML  = currentMoon.getOrbitalPeriod(centerPlanet) + " P☾︎";
-      document.getElementById("moon-orbital-velocity").innerHTML= currentMoon.getOrbitalVelocity(centerPlanet) + " V☾︎";
+      tabMoon.form.innerHTML = currentMoon.getForm();
+
+
+      tabMoon.density.setUnitlessValue(currentMoon.getDensity());
+      tabMoon.composition.innerHTML  = currentMoon.getComposition();
+      tabMoon.surfaceGravity.setUnitlessValue(currentMoon.getGravity());
+      tabMoon.semiMinorAxis.setUnitlessValue(currentMoon.getSemiMinorAxis());
+      tabMoon.periapsis.setUnitlessValue(currentMoon.getPeriapsis());
+      tabMoon.apoapsis.setUnitlessValue(currentMoon.getApoapsis());
+      tabMoon.orbitalPeriod.setUnitlessValue(currentMoon.getOrbitalPeriod(centerPlanet));
+      tabMoon.orbitalVelocity.setUnitlessValue(currentMoon.getOrbitalVelocity(centerPlanet));
 
       var trs = document.querySelectorAll(".minorMoonTR");
       for (tr of trs) {
@@ -366,7 +376,7 @@ var moonEditor = {
 
     for(obj of this.getCurrentMoonlist()) {
       var a = obj.semiMajorAxis;
-      var b = obj.getSemiMinorAxis();
+      var b = units.lunarDistance.convertToUnit(obj.getSemiMinorAxis());
       var e = obj.eccentricity;
 
       var roll  = obj.argumentOfPeriapsis * Math.PI / 180;
@@ -494,27 +504,25 @@ var moonEditor = {
         this.moonIndex = index;
 
         var currentMoon = this.getCurrentMoon();
-        document.getElementById("moon-name").value                             = currentMoon.name;
-        document.getElementById("moon-typeselector").value                     = currentMoon.typeIndex;
-        document.getElementById("moon-mass").value                             = currentMoon.mass;
-        document.getElementById("moon-radius").value                           = currentMoon.radius;
+        tabMoon.name.value = currentMoon.name;
+        tabMoon.typeSelector.value = currentMoon.typeIndex;
 
-        document.getElementById("moon-radius-2").value                         = currentMoon.radius2;
-        document.getElementById("moon-radius-3").value                         = currentMoon.radius3;
-
-
-        document.getElementById("moon-semi-major-axis").value                  = currentMoon.semiMajorAxis;
-        document.getElementById("moon-eccentricity").value                     = currentMoon.eccentricity;
-        document.getElementById("moon-inclination").value                      = currentMoon.inclination;
-        document.getElementById("moon-longitude-of-the-ascending-node").value  = currentMoon.longitudeOfTheAscendingNode;
-        document.getElementById("moon-argument-of-periapsis").value            = currentMoon.argumentOfPeriapsis;
+        tabMoon.mass.setUnitValue(currentMoon.mass,units.lunarMass);
+        tabMoon.radius.setUnitValue(currentMoon.radius,units.lunarRadius);
+        tabMoon.radiusB.setUnitValue(currentMoon.radius2,units.lunarRadius);
+        tabMoon.radiusC.setUnitValue(currentMoon.radius3,units.lunarRadius);
+        tabMoon.semiMajorAxis.setUnitValue(currentMoon.semiMajorAxis,units.lunarDistance);
+        tabMoon.eccentricity.setUnitlessValue(currentMoon.eccentricity);
+        tabMoon.inclination.setUnitValue(currentMoon.inclination,units.degrees);
+        tabMoon.longitudeOfTheAscendingNode.setUnitValue(currentMoon.longitudeOfTheAscendingNode,units.degrees);
+        tabMoon.argumentOfPeriapsis.setUnitValue(currentMoon.argumentOfPeriapsis,units.degrees);
       }
       this.updateView();
     }
   },
 
   invalidateMoonFields() {
-    invalidate("moon");
+    invalidate(tabMoonMoon);
   },
 
   updateName(name) {

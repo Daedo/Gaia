@@ -53,23 +53,28 @@ class OrbitObject {
   }
 
   getSemiMinorAxis() {
-    return round(this.semiMajorAxis*Math.sqrt(1 - (this.eccentricity*this.eccentricity)));
+    var smaAU = this.semiMajorAxis*Math.sqrt(1 - (this.eccentricity*this.eccentricity));
+    return round(units.au.convertToUnitless(smaAU));
   }
 
   getPeriapsis() {
-    return round(this.semiMajorAxis*(1 - this.eccentricity));
+    var periapsisAU = this.semiMajorAxis*(1 - this.eccentricity);
+    return round(units.au.convertToUnitless(periapsisAU));
   }
 
   getApoapsis() {
-    return round(this.semiMajorAxis*(1 + this.eccentricity));
+    var apoapsisAU = this.semiMajorAxis*(1 + this.eccentricity);
+    return round(units.au.convertToUnitless(apoapsisAU));
   }
 
   getOrbitalPeriod(star) {
-    return round(Math.sqrt(this.semiMajorAxis*this.semiMajorAxis*this.semiMajorAxis/star.mass));
+    var orbitalPeriodEarth = Math.sqrt(this.semiMajorAxis*this.semiMajorAxis*this.semiMajorAxis/star.mass);
+    return round(units.earthYear.convertToUnitless(orbitalPeriodEarth));
   }
 
   getOrbitalVelocity(star) {
-    return round(Math.sqrt(star.mass/this.semiMajorAxis));
+    var orbitalVelocityEarth = Math.sqrt(star.mass/this.semiMajorAxis)
+    return round(units.earthVelocity.convertToUnitless(orbitalVelocityEarth));
   }
 }
 
@@ -144,7 +149,7 @@ var orbitEditor = {
   },
 
   invalidateFields() {
-    invalidate("orbit");
+    invalidate(tabOrbit);
   },
 
   updateView() {
@@ -152,21 +157,27 @@ var orbitEditor = {
     this.updateSelector();
 
     var centerStar = starEditor.getStar(this.getCurrent().starIndex);
-    document.getElementById("orbit-starselector").value = this.getCurrent().starIndex;
-    document.getElementById("orbit-boundaries").innerHTML = centerStar.getInnerLimit()+" AU - "+centerStar.getOuterLimit()+" AU";
-    document.getElementById("orbit-habitable").innerHTML  = centerStar.getHabitableInner()+" AU - "+centerStar.getHabitableOuter()+" AU";
-    document.getElementById("orbit-frostline").innerHTML  = centerStar.getFrostline()+" AU";
+    tabOrbit.starSelector.value = this.getCurrent().starIndex;
+
+    var bLow  = centerStar.getInnerLimit();
+    var bHigh = centerStar.getOuterLimit();
+    tabOrbit.boundaries.setUnitlessValues(bLow,bHigh);
+
+    var hLow  = centerStar.getHabitableInner();
+    var hHigh =centerStar.getHabitableOuter();
+    tabOrbit.habitableZone.setUnitlessValues(hLow,hHigh);
+    tabOrbit.frostline      .setUnitlessValue(centerStar.getFrostline());
 
     updateOrbitAnalysis();
 
     if(this.objectIndex != -1) {
       var currentOrbitObject = this.getCurrentObject();
-      document.getElementById("object-planetselector").value        = currentOrbitObject.planetIndex;
-      document.getElementById("object-semi-minor-axis").innerHTML   = currentOrbitObject.getSemiMinorAxis()+" AU";
-      document.getElementById("object-periapsis").innerHTML         = currentOrbitObject.getPeriapsis()+" AU";
-      document.getElementById("object-apoapsis").innerHTML          = currentOrbitObject.getApoapsis()+" AU";
-      document.getElementById("object-orbital-period").innerHTML    = currentOrbitObject.getOrbitalPeriod(starEditor.getCurrent())+ " P🜨";
-      document.getElementById("object-orbital-velocity").innerHTML  = currentOrbitObject.getOrbitalVelocity(starEditor.getCurrent())+" Vo🜨";
+      tabOrbit.planetSelector.value = currentOrbitObject.planetIndex;
+      tabOrbit.semiMinorAxis  .setUnitlessValue(currentOrbitObject.getSemiMinorAxis());
+      tabOrbit.periapsis      .setUnitlessValue(currentOrbitObject.getPeriapsis());
+      tabOrbit.apoapsis       .setUnitlessValue(currentOrbitObject.getApoapsis());
+      tabOrbit.orbitalPeriod  .setUnitlessValue(currentOrbitObject.getOrbitalPeriod(starEditor.getCurrent()));
+      tabOrbit.orbitalVelocity.setUnitlessValue(currentOrbitObject.getOrbitalVelocity(starEditor.getCurrent()));
     }
 
     var trs = document.getElementsByClassName("objectTR");
@@ -238,7 +249,7 @@ var orbitEditor = {
     var centerStar   = starEditor.getStar(currentOrbit.starIndex);
 
     var rMax = canvasSize/2;
-    var scaleFactor = rMax / centerStar.getOuterLimit();
+    var scaleFactor = rMax / units.au.convertToUnit(centerStar.getOuterLimit());
     var cen = canvasSize/2;
     var cCount = 50;
 
@@ -247,7 +258,7 @@ var orbitEditor = {
 
     for(obj of this.getCurrentObjectlist()) {
       var a = obj.semiMajorAxis;
-      var b = obj.getSemiMinorAxis();
+      var b = units.au.convertToUnit(obj.getSemiMinorAxis());
       var e = obj.eccentricity;
 
       var roll  = obj.argumentOfPeriapsis * Math.PI / 180;
@@ -320,11 +331,11 @@ var orbitEditor = {
     ctx.strokeStyle = "green";
 
     ctx.beginPath();
-    ctx.arc(cen,cen,scaleFactor*centerStar.getHabitableInner(),0,2*Math.PI);
+    ctx.arc(cen,cen,scaleFactor*units.au.convertToUnit(centerStar.getHabitableInner()),0,2*Math.PI);
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.arc(cen,cen,scaleFactor*centerStar.getHabitableOuter(),0,2*Math.PI);
+    ctx.arc(cen,cen,scaleFactor*units.au.convertToUnit(centerStar.getHabitableOuter()),0,2*Math.PI);
     ctx.stroke();
 
     ctx.fillStyle = "white";
@@ -403,7 +414,7 @@ var orbitEditor = {
   },
 
   invalidateObjectFields() {
-    invalidate("object");
+    invalidate(tabOrbit);
   },
 
   setObjectIndex(index) {
@@ -415,11 +426,13 @@ var orbitEditor = {
       } else {
         this.objectIndex = index;
         var currentOrbitObject = this.getCurrentObject();
-        document.getElementById("object-semi-major-axis").value                 = currentOrbitObject.semiMajorAxis;
-        document.getElementById("object-eccentricity").value                    = currentOrbitObject.eccentricity;
-        document.getElementById("object-inclination").value                     = currentOrbitObject.inclination;
-        document.getElementById("object-longitude-of-the-ascending-node").value = currentOrbitObject.longitudeOfTheAscendingNode;
-        document.getElementById("object-argument-of-periapsis").value           = currentOrbitObject.argumentOfPeriapsis;
+
+        var smaUnitless = units.au.convertToUnitless(currentOrbitObject.semiMajorAxis);
+        tabOrbit.semiMajorAxis.setUnitlessValue(smaUnitless);
+        tabOrbit.eccentricity.setUnitlessValue(currentOrbitObject.eccentricity);
+        tabOrbit.inclination.setUnitlessValue(currentOrbitObject.inclination);
+        tabOrbit.longitudeOfTheAscendingNode.setUnitlessValue(currentOrbitObject.longitudeOfTheAscendingNode);
+        tabOrbit.argumentOfPeriapsis.setUnitlessValue(currentOrbitObject.argumentOfPeriapsis);
       }
 
       this.updateView();
@@ -489,7 +502,7 @@ var orbitEditor = {
 
 /* Orbit analysis*/
 function updateOrbitAnalysis() {
-  var list = document.getElementById("orbit-analysis");
+  var list = tabOrbit.orbitalAnalysis;
   clearList(list);
 
   var data = getOrbitAnalysisData();
@@ -570,6 +583,7 @@ function orbitEccentricityIndicator() {
 
 function orbitInclinationIdicator() {
   var currentOrbitObjects = orbitEditor.getCurrentObjectlist();
+
   var N = currentOrbitObjects.length;
   if(N<1) {
     return [];
@@ -607,85 +621,6 @@ function eccentricityTest(min, max, value, name) {
 
   if(value > 0.2) {
     out.push(name+" is so eccentric, that it threatens the stability of the system.");
-  }
-  return out;
-}
-
-function inclinationTest(value, maxDiffFromEccliptic,allowRetrograde,name) {
-  var out = [];
-
-  var acceptableInclination = ((value <= maxDiffFromEccliptic) || (allowRetrograde && (180-value)<= maxDiffFromEccliptic));
-  if(!acceptableInclination) {
-    out.push("The inclination of "+name+" is unusually high.");
-  }
-
-  if(value>90 && !allowRetrograde ) {
-    out.push("The retrograde orbit of "+ name +" might be unstable.");
-  }
-
-  if(value==90) {
-    out.push(name+ " has a polar orbit.");
-  }
-
-  if(value==0 || value == 180) {
-    out.push(name+ " has an equatorial orbit.");
-  }
-  return out;
-}
-
-function retrogradeTest(value,name) {
-  if(value>90) {
-    return [name+ " spins in a retrograde direction."];
-  }
-  return [];
-}
-
-function habitabilityTest(star, object, name) {
-  if(star.getHabitableInner() > object.getPeriapsis() || star.getHabitableOuter() < object.getApoapsis()) {
-    return [name+ "'s orbit peeks out of the habitable zone."];
-  }
-  return [];
-}
-
-function axisTest(star, object, innerSystem, closeToFrostLine, closeToStar, closeToEdge, name) {
-  var out = [];
-  var frostlineMin = star.getFrostline()+1;
-  var frostlineAvg = star.getFrostline()+1.2
-  var frostlineMax = star.getFrostline()+1.2;
-  var outer = star.getOuterLimit();
-  var axis = object.semiMajorAxis;
-
-  if(closeToStar) {
-    if(axis < 0.04) {
-      out.push(name+ " is too close to the star");
-    }
-    if(axis > 0.5) {
-      out.push("For a hot object "+name+" is not very hot.")
-    }
-  }
-
-  if(innerSystem) {
-    if(axis > frostlineMax) {
-      out.push(name+ " is unsually far away from the inner system.");
-    }
-  } else {
-    if(axis < frostlineMin) {
-      out.push(name+ " is unsually close to the inner system.");
-    }
-  }
-
-  if(closeToFrostLine) {
-    var relFL = axis/frostlineAvg;
-    if(relFL <0.9 || relFL >1.1) {
-      out.push(name+ " is unsually far away from the frostline.");
-    }
-  }
-
-  if(closeToEdge) {
-    var relOut = axis / outer;
-    if(relOut < 0.9 || relOut > 1.1) {
-      out.push(name+ " is unsually far away from the outer limit of the system.");
-    }
   }
   return out;
 }

@@ -28,33 +28,40 @@ class Planet {
   }
 
   getGravity() {
-    return round(this.mass / this.radius/this.radius);
+    var earthGravity = this.mass / this.radius/this.radius;
+    return round(units.earthGravity.convertToUnitless(earthGravity));
   }
 
   getDensity() {
-    return round(this.getGravity()/this.radius);
+    var earthDensity = this.mass / this.radius/this.radius/this.radius;
+    return round(units.earthDensity.convertToUnitless(earthDensity));
   }
 
   getCircumference() {
-    return round(this.radius);
+    var earthRadius = this.radius;
+    return round(units.earthCircumference.convertToUnitless(earthRadius));
   }
 
   getSurfaceArea() {
-    return round(this.radius*this.radius);
+    var earthArea = this.radius*this.radius
+    return round(units.earthSurfaceArea.convertToUnitless(earthArea));
   }
 
   getVolume() {
-    return round(this.radius*this.radius*this.radius);
+    var earthVolume = this.radius*this.radius*this.radius
+    return round(units.earthVolume.convertToUnitless(earthVolume));
   }
 
   getEscapeVelocity() {
-    return round(Math.sqrt(this.mass/this.radius));
+    var earthEscapeVelocity = Math.sqrt(this.mass/this.radius)
+    return round(units.earthEscapeVelocity.convertToUnitless(earthEscapeVelocity));
   }
 
   getMakeup() {
     return interpolator.interpolate(this.mass,this.radius);
   }
 
+  //XXX Update Units
   getHillSphereOuter(orbitObject, star) {
     var a = orbitObject.semiMajorAxis;
     var sMass = star.mass;
@@ -75,16 +82,15 @@ class Planet {
 
   planetRadiiToLunarDistances(val) {
     var earthRad = val*this.radius;
-    var lunDistInEarthRad = 60.33574;
-    return earthRad/lunDistInEarthRad;
+    return Unit.transform(units.earthRadius,units.lunarDistance,earthRad);
   }
 
   getPlanetRadiusInLunarRadii() {
-    return round(this.radius/0.273);
+    return Unit.transform(units.earthRadius,units.lunarRadius, this.radius);
   }
 
   getPlanetMassInLunarMasses() {
-    return this.mass/0.0123;
+    return Unit.transform(units.earthMass,units.lunarMass, this.mass);
   }
 
   getHabitability() {
@@ -296,17 +302,20 @@ var planetEditor = {
     if(index >= 0 && index < this.planets.length) {
       this.index = index;
 
-      document.getElementById("planet-name").value    = this.getCurrent().name;
-      document.getElementById("planet-mass").value    = this.getCurrent().mass;
-      document.getElementById("planet-radius").value  = this.getCurrent().radius;
-      document.getElementById("planet-typeselector").value = this.getCurrent().planetTypeIndex;
+      var currentPlanet = this.getCurrent();
+      tabPlanet.name.value = currentPlanet.name;
+      var unitlessMass = units.earthMass.convertToUnitless(this.getCurrent().mass);
+      tabPlanet.mass.setUnitlessValue(unitlessMass);
+      var unitlessRadius = units.earthRadius.convertToUnitless(this.getCurrent().radius);
+      tabPlanet.radius.setUnitlessValue(unitlessRadius);
+      tabPlanet.typeSelector.value = currentPlanet.planetTypeIndex;
 
       this.updateView();
     }
   },
 
   invalidateFields() {
-    invalidate("planet");
+    invalidate(tabPlanet);
   },
 
   updateView() {
@@ -314,13 +323,13 @@ var planetEditor = {
     this.updateSelectors();
 
     var planet = this.getCurrent();
-    document.getElementById("planet-gravity").innerHTML         = planet.getGravity() + " G🜨";
-    document.getElementById("planet-density").innerHTML         = planet.getDensity() + " ρ🜨";
-    document.getElementById("planet-circumference").innerHTML   = planet.getCircumference() + " C🜨";
-    document.getElementById("planet-area").innerHTML            = planet.getSurfaceArea()+" A🜨";
-    document.getElementById("planet-volume").innerHTML          = planet.getVolume()+" V🜨";
-    document.getElementById("planet-escape-velocity").innerHTML = planet.getEscapeVelocity()+" ve🜨";
-    document.getElementById("planet-habitability").innerHTML    = planet.getHabitability();
+    tabPlanet.gravity.setUnitlessValue(planet.getGravity());
+    tabPlanet.density.setUnitlessValue(planet.getDensity());
+    tabPlanet.circumference.setUnitlessValue(planet.getCircumference());
+    tabPlanet.area.setUnitlessValue(planet.getSurfaceArea());
+    tabPlanet.volume.setUnitlessValue(planet.getVolume());
+    tabPlanet.escapeVelocity.setUnitlessValue(planet.getEscapeVelocity());
+    tabPlanet.habitability.innerHTML   = planet.getHabitability();
 
     var compText = "";
     for(var [key,value] of planet.getMakeup()) {
@@ -334,7 +343,7 @@ var planetEditor = {
       }
     }
 
-    document.getElementById("planet-composition").innerHTML     = compText;
+    tabPlanet.composition.innerHTML     = compText;
 
     this.redraw();
   },
@@ -344,7 +353,7 @@ var planetEditor = {
   },
 
   updateSelectors() {
-    var planetSelector = document.getElementById("object-planetselector");
+    var planetSelector = tabOrbit.planetSelector;
     var val = planetSelector.value;
     clearList(planetSelector);
     var i = 0;
@@ -540,3 +549,82 @@ var planetTypes = [
       }
     }
 ];
+
+function inclinationTest(value, maxDiffFromEccliptic,allowRetrograde,name) {
+  var out = [];
+
+  var acceptableInclination = ((value <= maxDiffFromEccliptic) || (allowRetrograde && (180-value)<= maxDiffFromEccliptic));
+  if(!acceptableInclination) {
+    out.push("The inclination of "+name+" is unusually high.");
+  }
+
+  if(value>90 && !allowRetrograde ) {
+    out.push("The retrograde orbit of "+ name +" might be unstable.");
+  }
+
+  if(value==90) {
+    out.push(name+ " has a polar orbit.");
+  }
+
+  if(value==0 || value == 180) {
+    out.push(name+ " has an equatorial orbit.");
+  }
+  return out;
+}
+
+function retrogradeTest(value,name) {
+  if(value>90) {
+    return [name+ " spins in a retrograde direction."];
+  }
+  return [];
+}
+
+function habitabilityTest(star, object, name) {
+  if(star.getHabitableInner() > object.getPeriapsis() || star.getHabitableOuter() < object.getApoapsis()) {
+    return [name+ "'s orbit peeks out of the habitable zone."];
+  }
+  return [];
+}
+
+function axisTest(star, object, innerSystem, closeToFrostLine, closeToStar, closeToEdge, name) {
+  var out = [];
+  var frostlineMin = units.au.convertToUnit(star.getFrostline())+1;
+  var frostlineAvg = units.au.convertToUnit(star.getFrostline())+1.2
+  var frostlineMax = units.au.convertToUnit(star.getFrostline())+1.2;
+  var outer = units.au.convertToUnit(star.getOuterLimit());
+  var axis = object.semiMajorAxis;
+
+  if(closeToStar) {
+    if(axis < 0.04) {
+      out.push(name+ " is too close to the star");
+    }
+    if(axis > 0.5) {
+      out.push("For a hot object "+name+" is not very hot.")
+    }
+  }
+
+  if(innerSystem) {
+    if(axis > frostlineMax) {
+      out.push(name+ " is unsually far away from the inner system.");
+    }
+  } else {
+    if(axis < frostlineMin) {
+      out.push(name+ " is unsually close to the inner system.");
+    }
+  }
+
+  if(closeToFrostLine) {
+    var relFL = axis/frostlineAvg;
+    if(relFL <0.9 || relFL >1.1) {
+      out.push(name+ " is unsually far away from the frostline.");
+    }
+  }
+
+  if(closeToEdge) {
+    var relOut = axis / outer;
+    if(relOut < 0.9 || relOut > 1.1) {
+      out.push(name+ " is unsually far away from the outer limit of the system.");
+    }
+  }
+  return out;
+}
