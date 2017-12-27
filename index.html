@@ -44,41 +44,13 @@
             <th><input type="text" id="star-name"/></th>
           </tr>
 
-          <tr>
-            <th>Mass: </th>
-            <th><input type="text"  id="star-mass"/> (At least 0.08 M☉)</th>
-          </tr>
-
-          <tr>
-            <th>Luminosity: </th>
-            <th id="star-luminosity" class="output"></th>
-          </tr>
-
-          <tr>
-            <th>Radius: </th>
-            <th id="star-radius" class="output"></th>
-          </tr>
-
-          <tr>
-            <th>Surface Temperature: </th>
-            <th id="star-temperature" class="output"></th>
-          </tr>
-
-          <tr>
-            <th>Lifetime: </th>
-            <th id="star-lifetime" class="output"></th>
-          </tr>
-
-          <tr>
-            <th>Habitable zone (inner): </th>
-            <th id="star-habitable-inner" class="output"></th>
-          </tr>
-
-          <tr>
-            <th>Habitable zone (outer): </th>
-            <th id="star-habitable-outer" class="output"></th>
-          </tr>
-
+          <tr id="star-mass"></tr>
+          <tr id="star-luminosity"></tr>
+          <tr id="star-radius"></tr>
+          <tr id="star-temperature"></tr>
+          <tr id="star-lifetime"></tr>
+          <tr id="star-habitable-inner"></tr>
+          <tr id="star-habitable-outer"></tr>
           <tr>
             <th>Star Class: </th>
             <th id="star-class" class="output"></th>
@@ -112,59 +84,22 @@
             <th>Name: </th>
             <th><input type="text" id="planet-name"/></th>
           </tr>
-
-          <tr>
-            <th>Mass: </th>
-            <th><input type="text"  id="planet-mass"/> (between 0.1 and 4000 M🜨)</th>
-          </tr>
-
-          <tr>
-            <th>Radius: </th>
-            <th><input type="text"  id="planet-radius"/> (between 0.5 and 20 R🜨)</th>
-          </tr>
-
+          <tr id="planet-mass"></tr>
+          <tr id="planet-radius"></tr>
           <tr>
             <th>Type</th>
             <th><select id="planet-typeselector"></select></th>
           </tr>
-
-          <tr>
-            <th>Gravity: </th>
-            <th id="planet-gravity" class="output"></th>
-          </tr>
-
-          <tr>
-            <th>Density: </th>
-            <th id="planet-density" class="output"></th>
-          </tr>
-
-          <tr>
-            <th>Circumference: </th>
-            <th id="planet-circumference" class="output"></th>
-          </tr>
-
-          <tr>
-            <th>Surface Area: </th>
-            <th id="planet-area" class="output"></th>
-          </tr>
-
-          <tr>
-            <th>Volume: </th>
-            <th id="planet-volume" class="output"></th>
-          </tr>
-
-          <tr>
-            <th>Relative Escape Velocity: </th>
-            <th id="planet-escape-velocity" class="output"></th>
-          </tr>
-
-
-
+          <tr id="planet-gravity"></tr>
+          <tr id="planet-density"></tr>
+          <tr id="planet-circumference"></tr>
+          <tr id="planet-area"></tr>
+          <tr id="planet-volume"></tr>
+          <tr id="planet-escape-velocity"></tr>
           <tr>
             <th>Habitability: </th>
             <th id="planet-habitability" class="output"></th>
           </tr>
-
           <tr style="height: 75px;">
             <th style="vertical-align: top;">Crust Composition: </th>
             <th style="vertical-align: top;" id="planet-composition" class="output"></th>
@@ -194,73 +129,25 @@
               <th>Center Star</th>
               <th> <select id="orbit-starselector"></select></th>
             </tr>
-            <tr>
-              <th>System Boundaries: </th>
-              <th id="orbit-boundaries" class="output"></th>
-            </tr>
-            <tr>
-              <th>Habitable Zone: </th>
-              <th id="orbit-habitable" class="output"></th>
-            </tr>
-            <tr>
-              <th >Frost Line: </th>
-              <th id="orbit-frostline" class="output"></th>
-            </tr>
+            <tr id="orbit-boundaries"></tr>
+            <tr id="orbit-habitable"></tr>
+            <tr id="orbit-frostline"></tr>
 
             <tr class="objectTR">
               <th>Planet: </th>
               <th> <select id="object-planetselector"></select> </th>
             </tr>
 
-            <tr class="objectTR">
-              <th>Semi Major Axis: </th>
-              <th><input type="text"  id="object-semi-major-axis"/> in AU</th>
-            </tr>
-
-            <tr class="objectTR">
-              <th>Semi Minor Axis: </th>
-              <th id="object-semi-minor-axis" class="output"></th>
-            </tr>
-
-            <tr class="objectTR">
-              <th>Eccentricity: </th>
-              <th><input type="text"  id="object-eccentricity"/> less than 1</th>
-            </tr>
-
-            <tr class="objectTR">
-              <th>Periapsis: </th>
-              <th id="object-periapsis" class="output"></th>
-            </tr>
-
-            <tr class="objectTR">
-              <th>Apoapsis: </th>
-              <th id="object-apoapsis" class="output"></th>
-            </tr>
-
-            <tr class="objectTR">
-              <th>Orbital Period: </th>
-              <th id="object-orbital-period" class="output"></th>
-            </tr>
-
-            <tr class="objectTR">
-              <th>Orbital Velocity: </th>
-              <th id="object-orbital-velocity" class="output"></th>
-            </tr>
-
-            <tr class="objectTR">
-              <th>Inclination: </th>
-              <th><input type="text"  id="object-inclination"/> at most 180°</th>
-            </tr>
-
-            <tr class="objectTR">
-              <th>Longitude of the ascending node: </th>
-              <th><input type="text"  id="object-longitude-of-the-ascending-node"/> in degree</th>
-            </tr>
-
-            <tr class="objectTR">
-              <th>Argument of Periapsis: </th>
-              <th><input type="text" id="object-argument-of-periapsis"/> in degree</th>
-            </tr>
+            <tr class="objectTR" id="object-semi-major-axis"></tr>
+            <tr class="objectTR" id="object-semi-minor-axis"></tr>
+            <tr class="objectTR" id="object-eccentricity"></tr>
+            <tr class="objectTR" id="object-periapsis"></tr>
+            <tr class="objectTR" id="object-apoapsis"></tr>
+            <tr class="objectTR" id="object-orbital-period"></tr>
+            <tr class="objectTR" id="object-orbital-velocity"></tr>
+            <tr class="objectTR" id="object-inclination"></tr>
+            <tr class="objectTR" id="object-longitude-of-the-ascending-node"></tr>
+            <tr class="objectTR" id="object-argument-of-periapsis"></tr>
 
             <!-- Add True Anomaly for Lagange Points? -->
           </table>
@@ -304,10 +191,7 @@
             <th><select id="system-planetselector"></select></th>
           </tr>
 
-          <tr>
-            <th>Hill sphere</th>
-            <th id="system-hillsphere" class="output"></th>
-          </tr>
+          <tr id="system-hillsphere"></tr>
 
           <tr class="moonTR">
             <th>Name: </th>
@@ -319,95 +203,34 @@
             <th><select id="moon-typeselector"></select></th>
           </tr>
 
-          <tr class="moonTR">
-            <th>Mass: </th>
-            <th><input type="text"  id="moon-mass"/> in M☾︎</th>
-          </tr>
-
-          <tr class="moonTR">
-            <th>Radius: </th>
-            <th class="radInp"><input type="text"  id="moon-radius"/> less than R☾︎</th>
-          </tr>
-
-          <tr class="minorMoonTR">
-            <th>Radius Axis B: </th>
-            <th class="radInp"><input type="text"  id="moon-radius-2"/></th>
-          </tr>
-
-          <tr class="minorMoonTR">
-            <th>Radius Axis C: </th>
-            <th class="radInp"><input type="text"  id="moon-radius-3"/></th>
-          </tr>
+          <tr class="moonTR" id="moon-mass"></tr>
+          <tr class="moonTR" id="moon-radius"></tr>
+          <tr class="minorMoonTR" id="moon-radius-2"></tr>
+          <tr class="minorMoonTR" id="moon-radius-3"></tr>
 
           <tr class="moonTR">
             <th>Form: </th>
-            <th id="moon-form" class="output"></th>
+            <th id="moon-form" class="output">Sphere</th>
           </tr>
 
-          <tr class="moonTR">
-            <th>Density: </th>
-            <th id="moon-density" class="output"></th>
-          </tr>
+          <tr class="moonTR" id="moon-density"></tr>
 
           <tr class="moonTR">
             <th style="vertical-align: top;">Composition: </th>
             <th id="moon-composition" class="output"></th>
           </tr>
 
-          <tr class="moonTR">
-            <th>Surface Gravity: </th>
-            <th id="moon-gravity" class="output"></th>
-          </tr>
-
-          <tr class="moonTR">
-            <th>Semi Major Axis: </th>
-            <th><input type="text"  id="moon-semi-major-axis"/> in Lunar Distances</th>
-          </tr>
-
-          <tr class="moonTR">
-            <th>Semi Minor Axis: </th>
-            <th id="moon-semi-minor-axis" class="output"></th>
-          </tr>
-
-          <tr class="moonTR">
-            <th>Eccentricity: </th>
-            <th><input type="text"  id="moon-eccentricity"/> less than 1</th>
-          </tr>
-
-          <tr class="moonTR">
-            <th>Periapsis: </th>
-            <th id="moon-periapsis" class="output"></th>
-          </tr>
-
-          <tr class="moonTR">
-            <th>Apoapsis: </th>
-            <th id="moon-apoapsis" class="output"></th>
-          </tr>
-
-          <tr class="moonTR">
-            <th>Orbital Period: </th>
-            <th id="moon-orbital-period" class="output"></th>
-          </tr>
-
-          <tr class="moonTR">
-            <th>Orbital Velocity: </th>
-            <th id="moon-orbital-velocity" class="output"></th>
-          </tr>
-
-          <tr class="moonTR">
-            <th>Inclination: </th>
-            <th><input type="text"  id="moon-inclination"/> at most 180°</th>
-          </tr>
-
-          <tr class="moonTR">
-            <th>Longitude of the ascending node: </th>
-            <th><input type="text"  id="moon-longitude-of-the-ascending-node"/> in degrees</th>
-          </tr>
-
-          <tr class="moonTR">
-            <th>Argument of periapsis: </th>
-            <th><input type="text"  id="moon-argument-of-periapsis"/> in degrees</th>
-          </tr>
+          <tr class="moonTR" id="moon-gravity"></tr>
+          <tr class="moonTR" id="moon-semi-major-axis"></tr>
+          <tr class="moonTR" id="moon-semi-minor-axis"></tr>
+          <tr class="moonTR" id="moon-eccentricity"></tr>
+          <tr class="moonTR" id="moon-periapsis"></tr>
+          <tr class="moonTR" id="moon-apoapsis"></tr>
+          <tr class="moonTR" id="moon-orbital-period"></tr>
+          <tr class="moonTR" id="moon-orbital-velocity"></tr>
+          <tr class="moonTR" id="moon-inclination"></tr>
+          <tr class="moonTR" id="moon-longitude-of-the-ascending-node"></tr>
+          <tr class="moonTR" id="moon-argument-of-periapsis"></tr>
         </table>
         </div>
         <br/>
