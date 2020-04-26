@@ -71,7 +71,6 @@ export class Planet {
 
 	public get planetMarkup(): any {
 		let out = INTERPOLATOR.getComposition(this.mass, this.radius);
-		console.log(out);
 		return out;
 	}
 

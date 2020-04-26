@@ -80,6 +80,10 @@ export class ObjectEditorComponent implements OnInit {
 		this.current = null;
 	}
 
+	log() {
+		console.log('Test');
+	}
+
 	current: Planet | Star;
 
 	get hasSelection(): boolean {

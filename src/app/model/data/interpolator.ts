@@ -42,7 +42,6 @@ class CompositionInterpolator {
 
 	constructor() {
 		for (const line of DATA['default']) {
-			console.log(line);
 			this.compositions.push(line['composition']);
 			this.interpolators.push(new LinearInterpolator(line['mass'], line['radius']));
 		}

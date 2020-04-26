@@ -10,6 +10,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @NgModule({
 	declarations: [StarEditorComponent, PlanetEditorComponent, ObjectEditorComponent],
@@ -21,6 +22,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 		MatIconModule,
 		MatInputModule,
 		MatFormFieldModule,
+		MatExpansionModule,
 		FormsModule
 	]
 })
