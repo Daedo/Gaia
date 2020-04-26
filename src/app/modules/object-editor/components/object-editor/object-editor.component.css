@@ -1,0 +1,22 @@
+.sidebar {
+	width: 17em;
+}
+
+.searchbar {
+	margin-left: 1em;
+}
+
+.icon-button {
+	border: none;
+	outline: none;
+}
+
+.header-button {
+	margin-left: auto;
+	margin-right: 0;
+}
+
+.nav-container {
+	height: 100%;
+	overflow: scroll;
+}

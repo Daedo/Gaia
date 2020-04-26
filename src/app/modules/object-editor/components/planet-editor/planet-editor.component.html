@@ -1,0 +1,61 @@
+<div class="editor-row">
+	<div class="title-column"><b>Name</b></div>
+	<div class="data-column"><input [(ngModel)]="currentPlanet.planetName"/></div>	
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Mass</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentMass" [editable]="true" [lowerBound]="massLowerBound" 
+		[upperBound]="massUpperBound" (unitValueChange)="changeMass($event)"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Radius</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentRadius" [editable]="true" [lowerBound]="radiusLowerBound" 
+		[upperBound]="radiusUpperBound" (unitValueChange)="changeRadius($event)"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Gravity</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentPlanet.planetGravity"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Density</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentPlanet.planetDensity"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Circumference</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentPlanet.planetCircumference"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Surface Area</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentPlanet.planetSurfaceArea"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Gravity</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentPlanet.planetGravity"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Volume</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentPlanet.planetVolume"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Relative Escape Velocity</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentPlanet.planetEscapeVelocity"></unit-value-input></div>
+</div>
+
+<div class="editor-row big-editor-row">
+	<div class="title-column"><b>Habitability</b></div>
+	<div class="data-column"><label class="editor-label long-text-label">{{currentPlanet.planetHabitability}}</label></div>
+</div>
+
+<div class="editor-row big-editor-row">
+	<div class="title-column"><b>Crust Composition</b></div>
+	<div class="data-column"><label class="editor-label long-text-label">{{planetComposition}}</label></div>
+</div>

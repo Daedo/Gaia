@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es2016",
+        "jsx": "preserve",
+        "sourceMap": true,
+		"experimentalDecorators": true,
+		"resolveJsonModule": true
+    },
+    "exclude": [
+        "node_modules",
+        "**/node_modules/*"
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.tslint": true
+	}
+}

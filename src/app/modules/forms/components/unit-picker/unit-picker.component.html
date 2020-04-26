@@ -1,0 +1,4 @@
+<select  #selectModel class="unit-picker" (change)="selectionChanged($event)">
+	<option disabled hidden selected [value]="selected.symbol">{{selected.symbol}}</option>
+	<option *ngFor="let unit of units" [value]="unit.name">{{unit.name}}</option>
+</select>

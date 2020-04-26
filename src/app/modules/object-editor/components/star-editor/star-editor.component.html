@@ -1,0 +1,50 @@
+<div class="editor-row">
+	<div class="title-column"><b>Name</b></div>
+	<div class="data-column"><input [(ngModel)]="currentStar.starName"/></div>	
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Mass</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentMass" [editable]="true" [lowerBound]="massLowerBound" 
+		(warningChange)="warn($event)" (unitValueChange)="changeMass($event)"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Luminosity</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentStar.starLuminosity"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Radius</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentStar.starRadius"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Temperauture</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentStar.starTemperature"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Lifetime</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentStar.starLifetime"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Habitable zone (inner)</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentStar.starHabitableInner"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Habitable zone (outer)</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentStar.starHabitableOuter"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Star Class</b></div>
+	<div class="data-column"><label class="editor-label">{{currentStar.starClass}}</label></div>
+</div>
+
+<div class="editor-row big-editor-row">
+	<div class="title-column"><b>Habitability</b></div>
+	<div class="data-column"><label class="editor-label long-text-label">{{currentStar.starHabitablility}}</label></div>
+</div>

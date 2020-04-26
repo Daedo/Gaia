@@ -1,0 +1,55 @@
+<mat-sidenav-container class="nav-container">
+	<mat-sidenav mode="side" class="sidebar" opened>
+		<mat-action-list>
+			<mat-form-field class="searchbar">
+				<mat-label>Search</mat-label>
+				<input matInput placeholder="Object Name..." >
+			</mat-form-field>
+			<button class="icon-button">
+				<mat-icon>search</mat-icon>
+			</button>
+
+			<div matSubheader>
+				<h4>Stars</h4>
+				<button class="icon-button header-button" (click)="addNewStar()">
+					<mat-icon>add</mat-icon>
+				</button>
+			</div>
+
+			<mat-list-item *ngFor="let star of stars" (click)="select(star)">
+				<mat-icon matListIcon>brightness_5</mat-icon>
+				<h4 matLine>{{star.starName}}</h4>
+				<button class="icon-button" (click)="duplicateStar(star)">
+					<mat-icon>file_copy</mat-icon>
+				</button>
+				<button class="icon-button" (click)="deleteStar(star)">
+					<mat-icon>delete</mat-icon>
+				</button>
+			</mat-list-item>
+			<mat-divider></mat-divider>
+
+			<div matSubheader>
+				<h4>Planets</h4>
+				<button class="icon-button header-button" (click)="addNewPlanet()">
+					<mat-icon>add</mat-icon>
+				</button>
+			</div>
+
+			<mat-list-item *ngFor="let planet of planets" (click)="select(planet)">
+				<mat-icon matListIcon>public</mat-icon>
+				<h4 matLine>{{planet.planetName}}</h4>
+				<button class="icon-button" (click)="duplicatePlanet(planet)">
+					<mat-icon>file_copy</mat-icon>
+				</button>
+				<button class="icon-button" (click)="deletePlanet(planet)">
+					<mat-icon>delete</mat-icon>
+				</button>
+			</mat-list-item>
+		</mat-action-list>
+	</mat-sidenav>
+
+	<mat-sidenav-content [hidden]="!hasSelection">
+		<app-star-editor [hidden]="!currentIsStar" [star]="current"></app-star-editor>
+		<app-planet-editor [hidden]="!currentIsPlanet" [planet]="current"></app-planet-editor>
+	</mat-sidenav-content>
+</mat-sidenav-container>
