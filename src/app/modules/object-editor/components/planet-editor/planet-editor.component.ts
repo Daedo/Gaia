@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { UnitValue } from '../../../../model/unit';
+import { UnitValue } from '../../../../model/unit/unit';
 import { Planet } from '../../../../model/planet';
-import { Dimensions } from '../../../../model/dimension-collection';
+import { Dimensions } from '../../../../model/unit/dimension-collection';
 
 @Component({
 	selector: 'app-planet-editor',

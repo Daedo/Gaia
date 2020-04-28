@@ -1,71 +1,79 @@
-import { UnitValue } from './unit/unit';
-import { Dimensions } from './unit/dimension-collection';
+import { AbstractStarSystem } from './abstract-star-system';
+import { UnitValue } from '../../unit/unit';
+import { Dimensions } from '../../unit/dimension-collection';
+import { UUID } from '../../uuid-generator';
 
-export class Star {
-	constructor(private name: string, private mass: number) { }
+export class Star extends AbstractStarSystem {
+	private constructor(uuid: string, private readonly name: string, private readonly mass: number) {
+		super(uuid);
+	}
+
+	public static createStar(name: string, mass = 1.0) {
+		return new Star(UUID.getNext(), name, mass);
+	}
 
 	/**
      * The Mass of the star in solar masses.
      */
-	public get starMass(): UnitValue {
+	public getMass(): UnitValue {
 		return UnitValue.create(this.mass, Dimensions.MASS.solarMass);
 	}
 
-	public set starSolarMass(v: number) {
-		this.mass = v;
+	public withRawMass(mass: number): Star {
+		return new Star(this.uuid, this.name, mass);
 	}
 
-	public get starName(): string {
+	public getName(): string {
 		return this.name;
 	}
 
-	public set starName(newName: string) {
-		this.name = newName;
+	public withName(newName: string): Star {
+		return new Star(this.uuid, name, this.mass);
 	}
 
 	/**
      * The luminosity of the star relative to the sun.
      */
-	public get starLuminosity(): UnitValue {
+	public getLuminosity(): UnitValue {
 		return UnitValue.create(Math.pow(this.mass, 3), Dimensions.LUMINOSITY.solarLuminosity);
 	}
 
 	/**
      * The radius of the star in solar radii.
      */
-	public get starRadius(): UnitValue {
+	public getRadius(): UnitValue {
 		return UnitValue.create(Math.pow(this.mass, 0.74), Dimensions.LENGTH.solarRadius);
 	}
 
 	/**
      * The temperature of the star relative to the sun.
      */
-	public get starTemperature(): UnitValue {
+	public getTemperature(): UnitValue {
 		return UnitValue.create(Math.pow(this.mass, 0.505), Dimensions.TEMPERATURE.solarTemperature);
 	}
 
 	/**
      * The lifetime of the star relative to the sun.
      */
-	public get starLifetime(): UnitValue {
+	public getLifetime(): UnitValue {
 		return UnitValue.create(Math.pow(this.mass, -2.5), Dimensions.TIME.lifetimeSun);
 	}
 
 	/**
      * The inner bound of the star's habitable zone in AU.
      */
-	public get starHabitableInner(): UnitValue {
+	public getHabitableInner(): UnitValue {
 		return UnitValue.create(Math.pow(this.mass, 1.5) * 0.95, Dimensions.LENGTH.au);
 	}
 
 	/**
      * The outer bound of the star's habitable zone in AU.
      */
-	public get starHabitableOuter(): UnitValue {
+	public getHabitableOuter(): UnitValue {
 		return UnitValue.create(Math.pow(this.mass, 1.5) * 1.37, Dimensions.LENGTH.au);
 	}
 
-	public get starClass(): string {
+	public getStarClass(): string {
 		if (this.mass >= 16) {
 			return 'O';
 		}
@@ -90,11 +98,11 @@ export class Star {
 		return 'Not a star.';
 	}
 
-	public get starColor(): string {
+	public getColor(): string {
 		return null;
 	}
 
-	public get starHabitablility(): string {
+	public getHabitablility(): string {
 		if (this.mass == 1) {
 			return "It's the sun... You've built the sun...";
 		}
@@ -112,21 +120,21 @@ export class Star {
 	/**
      * The frostline of the star in AU.
      */
-	public get starFrostline(): UnitValue {
+	public getFrostline(): UnitValue {
 		return UnitValue.create(4.85 * Math.sqrt(Math.pow(this.mass, 3)), Dimensions.LENGTH.au);
 	}
 
 	/**
      * The inner bound of the star's influence in AU.
      */
-	public get starInnerLimit(): UnitValue {
+	public getInnerLimit(): UnitValue {
 		return UnitValue.create(0.1 * this.mass, Dimensions.LENGTH.au);
 	}
 
 	/**
      * The outer bound of the star's influence in AU.
      */
-	public get starOuterLimit(): UnitValue {
+	public getOuterLimit(): UnitValue {
 		return UnitValue.create(40 * this.mass, Dimensions.LENGTH.au);
 	}
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Star } from '../../../../model/star';
-import { UnitValue } from '../../../../model/unit';
-import { Dimensions } from '../../../../model/dimension-collection';
+import { UnitValue } from '../../../../model/unit/unit';
+import { Dimensions } from '../../../../model/unit/dimension-collection';
 
 @Component({
 	selector: 'app-star-editor',
