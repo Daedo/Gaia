@@ -24,7 +24,7 @@
 	<mat-list-item *ngFor="let star of stars" (click)="selectObject(star)">
 		<mat-icon matListIcon>brightness_5</mat-icon>
 		<h4 matLine>{{star.getName()}}</h4>
-		<button class="icon-button" (click)="duplicateStar(star)">
+		<button class="icon-button" (click)="dublicateStar(star)">
 			<mat-icon>file_copy</mat-icon>
 		</button>
 		<button class="icon-button" (click)="deleteObject(star)">
@@ -43,10 +43,28 @@
 	<mat-list-item *ngFor="let planet of planets" (click)="selectObject(planet)">
 		<mat-icon matListIcon>public</mat-icon>
 		<h4 matLine>{{planet.getName()}}</h4>
-		<button class="icon-button" (click)="duplicatePlanet(planet)">
+		<button class="icon-button" (click)="dublicatePlanet(planet)">
 			<mat-icon>file_copy</mat-icon>
 		</button>
 		<button class="icon-button" (click)="deleteObject(planet)">
+			<mat-icon>delete</mat-icon>
+		</button>
+	</mat-list-item>
+
+	<div matSubheader>
+		<h4>Moons</h4>
+		<button class="icon-button header-button" (click)="addNewMoon()">
+			<mat-icon>add</mat-icon>
+		</button>
+	</div>
+
+	<mat-list-item *ngFor="let moon of moons" (click)="selectObject(moon)">
+		<mat-icon matListIcon class='moon-icon'>brightness_3</mat-icon>
+		<h4 matLine>{{moon.getName()}}</h4>
+		<button class="icon-button" (click)="dublicateMoon(moon)">
+			<mat-icon>file_copy</mat-icon>
+		</button>
+		<button class="icon-button" (click)="deleteObject(moon)">
 			<mat-icon>delete</mat-icon>
 		</button>
 	</mat-list-item>

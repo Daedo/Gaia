@@ -4,6 +4,7 @@ import { SelectionService } from '../../services/selection.service';
 import { Star } from '../../../../model/objects/star-system/star';
 import { Planet } from '../../../../model/objects/planet';
 import { AbstractSystemObject } from '../../../../model/objects/abstract-system-object';
+import { Moon } from '../../../../model/objects/moon';
 
 @Component({
 	selector: 'sidenav-system',
@@ -16,6 +17,7 @@ export class SidenavSystemComponent implements OnInit {
 		this.system = system;
 		this.sysPlanets = Array.from(this.system.getPlanets().values());
 		this.sysStars = Array.from(this.system.getStars().values());
+		this.sysMoons = Array.from(this.system.getMoons().values());
 	}
 
 	@Output()
@@ -28,6 +30,7 @@ export class SidenavSystemComponent implements OnInit {
 	system: SolarSystem;
 	private sysStars: Star[];
 	private sysPlanets: Planet[];
+	private sysMoons: Moon[];
 
 	ngOnInit(): void { }
 
@@ -37,6 +40,10 @@ export class SidenavSystemComponent implements OnInit {
 
 	get planets() {
 		return this.sysPlanets;
+	}
+
+	get moons() {
+		return this.sysMoons;
 	}
 
 	private addObject(object: AbstractSystemObject) {
@@ -61,27 +68,47 @@ export class SidenavSystemComponent implements OnInit {
 		this.addObject(star);
 	}
 
-	duplicateStar(star: Star) {
+	dublicateStar(star: Star) {
 		let name = star.getName();
 		if (!name.startsWith('Copy of ')) {
 			name = 'Copy of ' + name;
 		}
-		let starCopy = star.withName(name);
+		let mass = star.getRawMass();
+		let starCopy = Star.createStar(name, mass);
 		this.addObject(starCopy);
 	}
+
 	// Planets
 	addNewPlanet() {
 		let planet = Planet.createPlanet('Unnamed Planet');
 		this.addObject(planet);
 	}
 
-	duplicatePlanet(planet: Planet) {
+	dublicatePlanet(planet: Planet) {
 		let name = planet.getName();
 		if (!name.startsWith('Copy of ')) {
 			name = 'Copy of ' + name;
 		}
-		let planetCopy = planet.withName(name);
+		let mass = planet.getRawMass();
+		let rad = planet.getRawRadius();
+		let planetCopy = Planet.createPlanet(name, mass, rad);
 		this.addObject(planetCopy);
+	}
+	// Moons
+	addNewMoon() {
+		let moon = Moon.createMoon('Unnamed Moon');
+		this.addObject(moon);
+	}
+
+	dublicateMoon(moon: Moon) {
+		let name = moon.getName();
+		if (!name.startsWith('Copy of ')) {
+			name = 'Copy of ' + name;
+		}
+		let mass = moon.getRawMass();
+		let rad = moon.getRadius();
+		let moonCopy = Moon.createMoon(name, mass, rad);
+		this.addObject(moonCopy);
 	}
 
 	log() {
