@@ -1,0 +1,22 @@
+.icon-button {
+	text-align: center;
+	outline: none;
+	text-decoration: none;
+	vertical-align: middle;
+	border-radius: 1px;
+	background-color: transparent;
+	display: inline-block;
+	padding: 2px 2px 2px 2px;
+	color: white;
+	border-color: white;
+}
+.icon-button:hover, .icon-button:active {
+	background-color: white;
+	color: black;
+}
+
+.icon-button:disabled, .icon-button:disabled:hover {
+	color: darkgray;
+	background-color: transparent;
+	border: 1px solid darkgray;
+}

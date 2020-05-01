@@ -27,7 +27,11 @@ export class ObjectEditorComponent implements OnInit {
 
 	private update(project: Project) {
 		this.currentProject = project;
-		this.currentSystems = Array.from(project.getSystems().values());
+		if (project == null) {
+			this.currentSystems = null;
+		} else {
+			this.currentSystems = Array.from(project.getSystems().values());
+		}
 	}
 
 	get systems() {

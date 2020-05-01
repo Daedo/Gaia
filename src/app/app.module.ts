@@ -11,6 +11,7 @@ import { OrbitBuilderModule } from './modules/orbit-builder/orbit-builder.module
 import { WelcomeModule } from './modules/welcome/welcome.module';
 import { FormsModule } from '@angular/forms';
 import { ObjectEditorModule } from './modules/object-editor/object-editor.module';
+import { DataModule } from './modules/data/data.module';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { ObjectEditorModule } from './modules/object-editor/object-editor.module
 		OrbitBuilderModule,
 		ObjectEditorModule,
 		WelcomeModule,
-		FormsModule
+		FormsModule,
+		DataModule
 	],
 	providers: [],
 	bootstrap: [AppComponent]
