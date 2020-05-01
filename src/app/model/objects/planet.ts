@@ -28,6 +28,11 @@ export class Planet extends AbstractSystemObject {
 		return UnitValue.create(this.mass, Dimensions.MASS.earthMass);
 	}
 
+	withMass(val: UnitValue): Planet {
+		let earthVal = val.changeUnit(Dimensions.MASS.earthMass).value.valueOf();
+		return this.withRawMass(parseFloat(earthVal));
+	}
+
 	public getRawMass(): number {
 		return this.mass;
 	}
@@ -38,6 +43,11 @@ export class Planet extends AbstractSystemObject {
 
 	public getRadius(): UnitValue {
 		return UnitValue.create(this.radius, Dimensions.LENGTH.earthRadius);
+	}
+
+	withRadius(val: UnitValue) {
+		let earthVal = val.changeUnit(Dimensions.LENGTH.earthRadius).value.valueOf();
+		return this.withRawRadius(parseFloat(earthVal));
 	}
 
 	public getRawRadius() {

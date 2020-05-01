@@ -1,87 +1,57 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { SolarSystem } from '../../../../model/objects/solar-system';
+import { Project } from '../../../../model/project';
 import { DataService } from '../../../data/services/data.service';
-import { Planet } from '../../../../model/planet';
-import { Star } from '../../../../model/star';
+import { SelectionService } from '../../services/selection.service';
+import { Planet } from '../../../../model/objects/planet';
+import { Star } from '../../../../model/objects/star-system/star';
 
 @Component({
 	selector: 'app-object-editor',
 	templateUrl: './object-editor.component.html',
-	styleUrls: ['./object-editor.component.css']
+	styleUrls: ['./object-editor.component.css', '../editor.css']
 })
 export class ObjectEditorComponent implements OnInit {
+	currentProject: Project;
+	currentSystems: SolarSystem[];
 
-	stars: Star[];
-	planets: Planet[];
-
-	constructor(private dataService: DataService) {
-		dataService.getStars().subscribe(change => this.stars = change);
-		dataService.getPlanets().subscribe(change => this.planets = change);
+	constructor(private dataService: DataService, private selectionService: SelectionService) {
+		this.update(this.dataService.project);
+		this.current = null;
+		dataService.subscribe(project => this.update(project));
+		selectionService.subscribe(object => this.current = object);
 	}
 
 	ngOnInit(): void {
 	}
 
-	// Stars
-	addNewStar() {
-		let star = new Star('Unnamed Star', 1.0);
-		this.dataService.addStar(star);
-		this.select(star);
+	private update(project: Project) {
+		this.currentProject = project;
+		this.currentSystems = Array.from(project.getSystems().values());
 	}
 
-	deleteStar(star: Star) {
-		this.dataService.deleteStar(star);
-		if (this.current === star) {
-			this.unselect();
-		}
+	get systems() {
+		return this.currentSystems;
 	}
 
-	duplicateStar(star: Star) {
-		let starMass = parseFloat(star.starMass.value.toString());
-		let name = star.starName;
-		if (!name.startsWith('Copy of ')) {
-			name = 'Copy of ' + name;
-		}
-		let starCopy = new Star(name, starMass);
-		this.dataService.addStar(starCopy);
-		this.select(starCopy);
+	updateSystem(system: SolarSystem) {
+		this.dataService.updateSolarSystem(system);
 	}
 
-	// Planets
-	addNewPlanet() {
-		let planet = new Planet('Unnamed Planet', 1.0, 1.0);
-		this.dataService.addPlanet(planet);
-		this.select(planet);
+	addSystem() {
+		let system = SolarSystem.createSolarSystem('Unnamed System');
+		this.dataService.addSolarSystem(system);
 	}
 
-	deletePlanet(planet: Planet) {
-		this.dataService.deletePlanet(planet);
-		if (this.current === planet) {
-			this.unselect();
-		}
+	deleteSystem(system: SolarSystem) {
+		this.dataService.deleteSolarSystem(system);
 	}
 
-	duplicatePlanet(planet: Planet) {
-		let planetMass = parseFloat(planet.planetMass.value.toString());
-		let planetRadius = parseFloat(planet.planetRadius.value.toString());
-		let name = planet.planetName;
-		if (!name.startsWith('Copy of ')) {
-			name = 'Copy of ' + name;
-		}
-		let planetCopy = new Planet(name, planetMass, planetRadius);
-		this.dataService.addPlanet(planetCopy);
-		this.select(planetCopy);
-	}
-
-	select(object: Star | Planet) {
+	updateObject(object: Star|Planet) {
 		this.current = object;
-	}
-
-	unselect() {
-		this.current = null;
-	}
-
-	log() {
-		console.log('Test');
+		let system = this.dataService.getSolarSystem(object);
+		let newSystem = system.withUpdatedObject(object);
+		this.updateSystem(newSystem);
 	}
 
 	current: Planet | Star;
@@ -97,5 +67,4 @@ export class ObjectEditorComponent implements OnInit {
 	get currentIsStar(): boolean {
 		return this.current instanceof Star;
 	}
-
 }

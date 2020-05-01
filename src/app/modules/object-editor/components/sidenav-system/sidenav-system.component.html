@@ -1,0 +1,53 @@
+<mat-expansion-panel [expanded]="isOpen()">
+	<mat-expansion-panel-header>
+		<mat-panel-title>
+			<mat-list-item (click)="$event.stopPropagation();log()">
+				<mat-icon matListIcon>filter_tilt_shift</mat-icon>
+				<h4 matLine>{{system.getName()}}</h4>
+				<button class="icon-button">
+					<mat-icon>file_copy</mat-icon>
+				</button>
+				<button class="icon-button">
+					<mat-icon>delete</mat-icon>
+				</button>
+			</mat-list-item>
+		</mat-panel-title>
+	</mat-expansion-panel-header>
+
+	<div matSubheader>
+		<h4>Stars</h4>
+		<button class="icon-button header-button" (click)="addNewStar()">
+			<mat-icon>add</mat-icon>
+		</button>
+	</div>
+
+	<mat-list-item *ngFor="let star of stars" (click)="selectObject(star)">
+		<mat-icon matListIcon>brightness_5</mat-icon>
+		<h4 matLine>{{star.getName()}}</h4>
+		<button class="icon-button" (click)="duplicateStar(star)">
+			<mat-icon>file_copy</mat-icon>
+		</button>
+		<button class="icon-button" (click)="deleteObject(star)">
+			<mat-icon>delete</mat-icon>
+		</button>
+	</mat-list-item>
+	<mat-divider></mat-divider>
+
+	<div matSubheader>
+		<h4>Planets</h4>
+		<button class="icon-button header-button" (click)="addNewPlanet()">
+			<mat-icon>add</mat-icon>
+		</button>
+	</div>
+
+	<mat-list-item *ngFor="let planet of planets" (click)="selectObject(planet)">
+		<mat-icon matListIcon>public</mat-icon>
+		<h4 matLine>{{planet.getName()}}</h4>
+		<button class="icon-button" (click)="duplicatePlanet(planet)">
+			<mat-icon>file_copy</mat-icon>
+		</button>
+		<button class="icon-button" (click)="deleteObject(planet)">
+			<mat-icon>delete</mat-icon>
+		</button>
+	</mat-list-item>
+</mat-expansion-panel>

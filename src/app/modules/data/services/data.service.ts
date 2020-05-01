@@ -1,73 +1,76 @@
 import { Injectable } from '@angular/core';
-import { Star } from '../../../model/star';
-import { Planet } from '../../../model/planet';
-
-import { Observable, of } from 'rxjs';
-import { SolarSystem } from '../../../model/solar-system';
+import { Subscription } from 'rxjs';
+import { SolarSystem } from '../../../model/objects/solar-system';
 import { ActionBuffer } from '../../../model/action-buffer';
-import { List } from 'immutable';
+import { Project } from '../../../model/project';
+import { AbstractSystemObject } from '../../../model/objects/abstract-system-object';
+import { createStandardProject } from '../../../model/data/default-project';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class DataService {
+	private static readonly HISTORY_SIZE = 100;
+
 	/**
 	 * Service that holds the data of the current project
 	 */
 	constructor() {
-		let stars = [new Star('Sol', 1.0)];
-		let planets = [new Planet('Terra', 1.0, 1.0)];
-		this.systems = List.of(SolarSystem.createEmptySystem('Testsystem', stars, planets));
-		this.history.push(this.systems);
-
-		this.stars = [new Star('Sol', 1.0)];
-		this.planets = [new Planet('Terra', 1.0, 1.0)];
+		this.history = new ActionBuffer(DataService.HISTORY_SIZE);
+		let project = createStandardProject();
+		this.history.push(project);
 	}
 
-	private history: ActionBuffer<List<SolarSystem>>;
-	private systems: List<SolarSystem>;
-
-	private stars: Star[];
-
-	public getSystems(): Observable<List<SolarSystem>> {
-		return of(this.systems);
+	private history: ActionBuffer<Project>;
+	public get canUndo(): boolean {
+		return this.history.canUndo();
 	}
 
-	public getStars(): Observable<Star[]> {
-		return of(this.stars);
+	public get canRedo(): boolean {
+		return this.history.canRedo();
 	}
 
-	public addStar(star: Star) {
-		if (star === null || star === undefined) {
-			throw new Error('Star can not be null or undefined');
+	public undo() {
+		this.history.undo();
+	}
+
+	public redo() {
+		this.history.redo();
+	}
+
+	public subscribe(callback: (Project) => void ): Subscription {
+		return this.history.subscribe(callback);
+	}
+
+	public get project(): Project {
+		return this.history.getCurrent();
+	}
+
+	public get solarSystems(): IterableIterator<SolarSystem> {
+		return this.project.getSystems().values();
+	}
+
+	public addSolarSystem(system: SolarSystem) {
+		let newProj = this.project.withAddedSystem(system);
+		this.history.push(newProj);
+	}
+
+	public updateSolarSystem(system: SolarSystem) {
+		let newProj = this.project.withUpdatedSystem(system);
+		this.history.push(newProj);
+	}
+
+	public deleteSolarSystem(system: SolarSystem) {
+		let newProj = this.project.withDeletedSystem(system);
+		this.history.push(newProj);
+	}
+
+	public getSolarSystem(object: AbstractSystemObject): SolarSystem {
+		for (let system of this.solarSystems) {
+			if (system.hasObject(object)) {
+				return system;
+			}
 		}
-		this.stars.push(star);
-	}
-
-	public deleteStar(star: Star) {
-		let index = this.stars.indexOf(star);
-		if (index !== -1) {
-			this.stars.splice(index, 1);
-		}
-	}
-
-	private planets: Planet[];
-
-	public getPlanets(): Observable<Planet[]> {
-		return of(this.planets);
-	}
-
-	public addPlanet(planet: Planet) {
-		if (planet === null || planet === undefined) {
-			throw new Error('Planet can not be null or undefined');
-		}
-		this.planets.push(planet);
-	}
-
-	public deletePlanet(planet: Planet) {
-		let index = this.planets.indexOf(planet);
-		if (index !== -1) {
-			this.planets.splice(index, 1);
-		}
+		return null;
 	}
 }

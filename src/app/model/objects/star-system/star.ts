@@ -23,12 +23,17 @@ export class Star extends AbstractStarSystem {
 		return new Star(this.uuid, this.name, mass);
 	}
 
+	public withMass(val: UnitValue) {
+		let solarMass = val.changeUnit(Dimensions.MASS.solarMass);
+		return this.withRawMass(parseFloat(solarMass.value.valueOf()));
+	}
+
 	public getName(): string {
 		return this.name;
 	}
 
 	public withName(newName: string): Star {
-		return new Star(this.uuid, name, this.mass);
+		return new Star(this.uuid, newName, this.mass);
 	}
 
 	/**

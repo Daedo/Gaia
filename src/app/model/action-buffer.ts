@@ -1,3 +1,6 @@
+import { EventEmitter } from '@angular/core';
+import { Subscription } from 'rxjs';
+
 
 /**
  * Generic Buffer for storing states.
@@ -7,16 +10,34 @@ export class ActionBuffer<T> {
 	private data: T[];
 
 	private start: number;
-	private current: number;
+	private currentVal: number;
 	private end: number;
 	private size: number;
+	private changeEmitter: EventEmitter<T>;
+
+	private set current(value: number) {
+		let sendEvent = this.currentVal != value;
+		this.currentVal = value;
+		if (sendEvent) {
+			if (!this.canUndo()) {
+				this.changeEmitter.emit(null);
+			} else {
+				this.changeEmitter.emit(this.getCurrent());
+			}
+		}
+	}
+
+	private get current(): number {
+		return this.currentVal;
+	}
 
 	constructor(size: number) {
 		this.data = new Array<T>(size);
 		this.size = size;
 		this.start = 0;
-		this.current = 0;
+		this.currentVal = 0;
 		this.end = 0;
+		this.changeEmitter = new EventEmitter();
 	}
 
 	/**
@@ -30,8 +51,9 @@ export class ActionBuffer<T> {
 
 	public push(element: T): void {
 		this.data[this.current] = element;
-		this.current = (this.current + 1) % this.size;
-		this.end = this.current;
+		let next = (this.current + 1) % this.size;
+		this.end = next;
+		this.current = next;
 		if (this.end == this.start) {
 			this.end = (this.end + 1) % this.size;
 		}
@@ -75,6 +97,11 @@ export class ActionBuffer<T> {
 		if (this.isEmpty()) {
 			throw new Error('Buffer is empty');
 		}
-		return this.data[this.current];
+		let pos = (this.current - 1) % this.size;
+		return this.data[pos];
+	}
+
+	public subscribe(callback: (newState: T) => void): Subscription {
+		return this.changeEmitter.subscribe(callback);
 	}
 }

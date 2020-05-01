@@ -11,9 +11,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { SidenavSystemComponent } from './components/sidenav-system/sidenav-system.component';
 
 @NgModule({
-	declarations: [StarEditorComponent, PlanetEditorComponent, ObjectEditorComponent],
+	declarations: [
+		StarEditorComponent,
+		PlanetEditorComponent,
+		ObjectEditorComponent,
+		SidenavSystemComponent
+	],
 	imports: [
 		CommonModule,
 		CoreFormsModule,
