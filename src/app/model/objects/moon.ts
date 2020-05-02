@@ -12,7 +12,7 @@ export class Moon extends AbstractSystemObject {
 		super(uuid);
 	}
 
-	public static createMoon(name: string, mass = 1, radius: number|TriaxialRadius = 1) {
+	public static createMoon(name: string, mass = 1, radius: number | TriaxialRadius = 1) {
 		let tRad = null;
 		if (radius instanceof TriaxialRadius) {
 			tRad = radius;
@@ -43,7 +43,7 @@ export class Moon extends AbstractSystemObject {
 		return new Moon(this.uuid, this.name, val, this.radius);
 	}
 
-	public getRawMass() {
+	public getRawMass(): number {
 		return this.mass;
 	}
 
@@ -53,6 +53,59 @@ export class Moon extends AbstractSystemObject {
 
 	public getRadius(): TriaxialRadius {
 		return this.radius;
+	}
+
+	private get averageRadius(): number {
+		let ra = this.radius.getRawRadiusA();
+		let rb = this.radius.getRawRadiusB();
+		let rc = this.radius.getRawRadiusC();
+		return (ra + rb + rc) / 3;
+	}
+
+	public getForm(): string {
+		let ra = this.radius.getRawRadiusA();
+		let rb = this.radius.getRawRadiusB();
+		let rc = this.radius.getRawRadiusC();
+		let r = [ra, rb, rc].sort();
+
+		if (!this.isMinorMoon || (r[0] == r[1] && r[1] == r[2])) {
+			// All axis have the same lenght
+			return 'Sphere';
+		}
+
+		if (r[0] < r[1] && r[1] < r[2]) {
+			// All axis are of different length
+			return 'Triaxial Spheroid';
+		}
+
+		if (r[0] == r[1] && r[1] < r[2]) {
+			// There are two short an one long axis
+			return 'Prolate Shereoid';
+		}
+		// There are one short and two long axis
+		return 'Oblate Spheroid';
+	}
+
+	public getDensity(): UnitValue {
+		let vol = this.getVolume().asFloat();
+		let val = this.mass / vol;
+		return UnitValue.create(val, Dimensions.DENSITY.lunarDensity);
+	}
+
+	public getGravity(): UnitValue {
+		// Approximation as a uniform sphere
+		let r = this.averageRadius;
+		let val = this.mass / r / r;
+		return UnitValue.create(val, Dimensions.GRAVITY.lunarGravity);
+	}
+
+	public getEscapeVelocity(): UnitValue {
+		const val = Math.sqrt(this.mass / this.averageRadius);
+		return UnitValue.create(val, Dimensions.VELOCITY.lunarEscapeVelocity);
+	}
+
+	public getMarkup(): string {
+		return 'TODO';
 	}
 
 	/**
@@ -90,7 +143,7 @@ export class Moon extends AbstractSystemObject {
 }
 
 export class TriaxialRadius {
-	constructor(private readonly radiusA: number, private readonly radiusB = radiusA, private readonly radiusC = radiusA) {}
+	constructor(private readonly radiusA: number, private readonly radiusB = radiusA, private readonly radiusC = radiusA) { }
 
 	public getRadiusA(): UnitValue {
 		return UnitValue.create(this.radiusA, Dimensions.LENGTH.lunarRadius);
