@@ -1,13 +1,13 @@
 <mat-sidenav-container class="nav-container">
 	<mat-sidenav mode="side" class="sidebar" opened>
 		<mat-action-list>
-			<mat-form-field class="searchbar">
+			<!--<mat-form-field class="searchbar">
 				<mat-label>Search</mat-label>
 				<input matInput placeholder="Object Name..." >
 			</mat-form-field>
 			<button class="icon-button">
 				<mat-icon>search</mat-icon>
-			</button>
+			</button>-->
 
 			<div matSubheader>
 				<h4>Solar Systems</h4>
@@ -22,5 +22,6 @@
 	<mat-sidenav-content [hidden]="!hasSelection">
 		<app-star-editor [hidden]="!currentIsStar" [star]="current" (starChanged)="updateObject($event)"></app-star-editor>
 		<app-planet-editor [hidden]="!currentIsPlanet" [planet]="current" (planetChanged)="updateObject($event)"></app-planet-editor>
+		<app-moon-editor [hidden]="!currentIsMoon" [moon]="current" (moonChanged)="updateObject($event)"></app-moon-editor>
 	</mat-sidenav-content>
 </mat-sidenav-container>

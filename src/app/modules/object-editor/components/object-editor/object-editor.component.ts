@@ -5,6 +5,7 @@ import { DataService } from '../../../data/services/data.service';
 import { SelectionService } from '../../services/selection.service';
 import { Planet } from '../../../../model/objects/planet';
 import { Star } from '../../../../model/objects/star-system/star';
+import { Moon } from '../../../../model/objects/moon';
 
 @Component({
 	selector: 'app-object-editor',
@@ -51,14 +52,14 @@ export class ObjectEditorComponent implements OnInit {
 		this.dataService.deleteSolarSystem(system);
 	}
 
-	updateObject(object: Star|Planet) {
+	updateObject(object: Star|Planet|Moon) {
 		this.current = object;
 		let system = this.dataService.getSolarSystem(object);
 		let newSystem = system.withUpdatedObject(object);
 		this.updateSystem(newSystem);
 	}
 
-	current: Planet | Star;
+	current: Planet | Star | Moon;
 
 	get hasSelection(): boolean {
 		return this.current !== null;
@@ -70,5 +71,9 @@ export class ObjectEditorComponent implements OnInit {
 
 	get currentIsStar(): boolean {
 		return this.current instanceof Star;
+	}
+
+	get currentIsMoon(): boolean {
+		return this.current instanceof Moon;
 	}
 }

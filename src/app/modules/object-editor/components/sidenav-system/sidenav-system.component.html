@@ -1,4 +1,6 @@
 <mat-expansion-panel [expanded]="isOpen()">
+	
+	<mat-divider></mat-divider>
 	<mat-expansion-panel-header>
 		<mat-panel-title>
 			<mat-list-item (click)="$event.stopPropagation();log()">
@@ -31,8 +33,8 @@
 			<mat-icon>delete</mat-icon>
 		</button>
 	</mat-list-item>
-	<mat-divider></mat-divider>
 
+	<mat-divider></mat-divider>
 	<div matSubheader>
 		<h4>Planets</h4>
 		<button class="icon-button header-button" (click)="addNewPlanet()">
@@ -51,6 +53,7 @@
 		</button>
 	</mat-list-item>
 
+	<mat-divider></mat-divider>
 	<div matSubheader>
 		<h4>Moons</h4>
 		<button class="icon-button header-button" (click)="addNewMoon()">

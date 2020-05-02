@@ -1,0 +1,62 @@
+<div class="editor-row">
+	<div class="title-column"><b>Name</b></div>
+	<div class="data-column"><input [(ngModel)]="currentName"/></div>	
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Mass</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentMass" [editable]="true" (unitValueChange)="changeMass($event)"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>{{radiusName}}</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentRadius.getRadiusA()" [editable]="true" [lowerBound]="radiusLowerBound"
+		(unitValueChange)="changeRadiusA($event)"></unit-value-input></div>
+</div>
+
+<div class="editor-row" *ngIf="isMinorMoon">
+	<div class="title-column"><b>Radius B</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentRadius.getRadiusB()" [editable]="true" [lowerBound]="radiusLowerBound"
+		(unitValueChange)="changeRadiusB($event)"></unit-value-input></div>
+</div>
+
+<div class="editor-row" *ngIf="isMinorMoon">
+	<div class="title-column"><b>Radius C</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentRadius.getRadiusC()" [editable]="true" [lowerBound]="radiusLowerBound"
+		(unitValueChange)="changeRadiusC($event)"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>From</b></div>
+	<div class="data-column"><label class="editor-label">{{currentMoon.getForm()}}</label></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Gravity</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentMoon.getGravity()"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Density</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentMoon.getDensity()"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Surface Area</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentMoon.getSurfaceArea()"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Volume</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentMoon.getVolume()"></unit-value-input></div>
+</div>
+
+<div class="editor-row">
+	<div class="title-column"><b>Relative Escape Velocity</b></div>
+	<div class="data-column"><unit-value-input [unitValue]="currentMoon.getEscapeVelocity()"></unit-value-input></div>
+</div>
+
+<div class="editor-row big-editor-row">
+	<div class="title-column"><b>Crust Composition</b></div>
+	<div class="data-column"><label class="editor-label long-text-label">{{getComposition()}}</label></div>
+</div>

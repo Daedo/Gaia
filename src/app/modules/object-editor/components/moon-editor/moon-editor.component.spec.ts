@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PlanetEditorComponent } from './planet-editor.component';
+import { MoonEditorComponent } from './moon-editor.component';
 
-describe('PlanetEditorComponent', () => {
-	let component: PlanetEditorComponent;
-	let fixture: ComponentFixture<PlanetEditorComponent>;
+describe('MoonEditorComponent', () => {
+	let component: MoonEditorComponent;
+	let fixture: ComponentFixture<MoonEditorComponent>;
 
 	beforeEach(async(() => {
 		TestBed.configureTestingModule({
-			declarations: [PlanetEditorComponent]
+			declarations: [MoonEditorComponent]
 		})
 			.compileComponents();
 	}));
 
 	beforeEach(() => {
-		fixture = TestBed.createComponent(PlanetEditorComponent);
+		fixture = TestBed.createComponent(MoonEditorComponent);
 		component = fixture.componentInstance;
 		fixture.detectChanges();
 	});
