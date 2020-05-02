@@ -1,6 +1,7 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { UnitValue, AbstractUnit } from '../../../../model/unit/unit';
 import Big from 'big.js';
+import { update } from 'immutable';
 
 @Component({
 	selector: 'unit-value-input',
@@ -8,26 +9,46 @@ import Big from 'big.js';
 	styleUrls: ['./unit-value-input.component.css']
 })
 export class UnitValueInputComponent implements OnInit {
-	constructor() { }
+	constructor() {
+		this.currentValue = null;
+	}
+
 	ngOnInit(): void { }
 
-	uValue: UnitValue;
+	currentValue: UnitValue;
+
 	@Input()
 	set unitValue(value: UnitValue) {
-		this.uValue = value;
-		this.textValue = this.uValue.value.toPrecision(4);
+		// Reset the value only if new != current (by value not just by unit)
+		if (this.currentValue === null) {
+			// We initialize the picker
+			this.update(value);
+		} else {
+			// Check if the value is different
+			let changed = value.changeUnit(this.currentValue.unit);
+			if (changed.value.cmp(this.currentValue.value).toFixed(0) !== '0') {
+				// The value has changed
+				this.update(value);
+			}
+		}
 	}
 	@Output() unitValueChange = new EventEmitter<UnitValue>();
 
+
+	update(value: UnitValue) {
+		this.currentValue = value;
+		this.textValue = this.currentValue.value.toPrecision(4);
+	}
+
 	get unit(): AbstractUnit {
-		return this.uValue.unit;
+		return this.currentValue.unit;
 	}
 
 	set unit(unit: AbstractUnit) {
-		this.uValue = this.uValue.changeUnit(unit);
-		this.unitValueChange.emit(this.uValue);
-		this.textValue = this.uValue.value.toPrecision(4);
+		this.currentValue = this.currentValue.changeUnit(unit);
+		this.textValue = this.currentValue.value.toPrecision(4);
 		this.invalid = null;
+		this.unitValueChange.emit(this.currentValue);
 	}
 
 	textValue: string;
@@ -40,7 +61,7 @@ export class UnitValueInputComponent implements OnInit {
 			let newVal = new Big(value);
 			this.invalid = this.validate(newVal);
 			if (this.invalid === null) {
-				this.uValue = new UnitValue(this.unit, newVal);
+				this.currentValue = new UnitValue(this.unit, newVal);
 				this.unitValueChange.emit(new UnitValue(this.unit, newVal));
 			}
 		} catch (error) {
