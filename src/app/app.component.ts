@@ -18,10 +18,6 @@ export class AppComponent {
 				link: './objects',
 				index: 0
 			}, {
-				label: 'Orbits',
-				link: './orbits',
-				index: 1
-			}, {
 				label: 'Save / Load / Export',
 				link: './save',
 				index: 2

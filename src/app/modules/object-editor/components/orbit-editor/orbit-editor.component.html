@@ -5,6 +5,9 @@
 		Add to Existing Orbit
 	-->
 	<p>No Orbit found...</p>
+	<select>
+		<option *ngFor="let object of centerObjectCandidates" [ngValue]="object.uuid">{{object.name}}</option>
+	</select>
 </div><div *ngIf="hasOrbit">
 	<p>Orbit found...</p>
 	<!--
