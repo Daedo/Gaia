@@ -1,5 +1,5 @@
 import { AbstractSystemObject } from './abstract-system-object';
-import { List, Map } from 'immutable';
+import { Map } from 'immutable';
 import { UnitValue } from '../unit/unit';
 import { Dimensions } from '../unit/dimension-collection';
 

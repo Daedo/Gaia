@@ -1,0 +1,14 @@
+<div *ngIf="!hasOrbit">
+	<!--
+		Allow the creation of a new Orbit:
+		Select Central Object; Click Create Orbit OR
+		Add to Existing Orbit
+	-->
+	<p>No Orbit found...</p>
+</div><div *ngIf="hasOrbit">
+	<p>Orbit found...</p>
+	<!--
+		Edit properties of orbit
+		Option to split the orbit if it is a joined orbit with another object.
+	-->
+</div>

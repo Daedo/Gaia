@@ -76,4 +76,8 @@ export class ObjectEditorComponent implements OnInit {
 	get currentIsMoon(): boolean {
 		return this.current instanceof Moon;
 	}
+
+	get currentCanHaveOrbit(): boolean {
+		return this.currentIsPlanet || this.currentIsMoon;
+	}
 }

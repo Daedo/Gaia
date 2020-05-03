@@ -13,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { SidenavSystemComponent } from './components/sidenav-system/sidenav-system.component';
 import { MoonEditorComponent } from './components/moon-editor/moon-editor.component';
+import { OrbitEditorComponent } from './components/orbit-editor/orbit-editor.component';
 
 @NgModule({
 	declarations: [
@@ -20,7 +21,8 @@ import { MoonEditorComponent } from './components/moon-editor/moon-editor.compon
 		PlanetEditorComponent,
 		ObjectEditorComponent,
 		SidenavSystemComponent,
-		MoonEditorComponent
+		MoonEditorComponent,
+		OrbitEditorComponent
 	],
 	imports: [
 		CommonModule,
