@@ -1,4 +1,5 @@
 import { Project } from '../project';
+import { MIGRATORS } from './migration/migrator';
 
 export const SAVEFILE_VERSION = '1';
 
@@ -7,13 +8,19 @@ export function deserialize(json: string): Project {
 	let object = JSON.parse(json);
 	// Migrate if neccessary
 	if (!object.hasOwnProperty('version')) {
-		// Use Legacy Migrator
-		throw new Error('Unsupported File Version');
+		// Legacy Savefile
+		object['version'] = '0';
 	}
 
 	while (object['version'] != SAVEFILE_VERSION) {
+		let version = object['version'];
+		if (! MIGRATORS.hasOwnProperty(version)) {
+			throw new Error('Unsupported File Version');
+		}
 		// Migrate to the next higher version
-		throw new Error('Unsupported File Version');
+		let migrator = MIGRATORS[version];
+		object = migrator.migrate(object);
+		object['version'] = migrator.outputVersion;
 	}
 
 	return Project.deserialize(object);

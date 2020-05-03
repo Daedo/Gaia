@@ -11,6 +11,7 @@ export function createStandardProject(): Project {
 	let moon = Moon.createMoon('Luna');
 	let system = SolarSystem.createSolarSystem('Solar System');
 	system = system.withAddedObject(earth).withAddedObject(sun).withAddedObject(moon);
-	let project = Project.getEmptyProject('Demo');
+	let project = Project.getEmptyProject('Demo Project');
+	console.log(serialize(project.withAddedSystem(system)));
 	return project.withAddedSystem(system);
 }
