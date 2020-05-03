@@ -22,6 +22,14 @@ export class Moon extends AbstractSystemObject {
 		return new Moon(UUID.getNext(), name, mass, tRad);
 	}
 
+	public static deserialize(data: any): Moon {
+		let uuid = data['uuid'];
+		let name = data['name'];
+		let mass = data['mass'];
+		let radius = TriaxialRadius.deserialize(data['radius']);
+		return new Moon(uuid, name, mass, radius);
+	}
+
 	public getName(): string {
 		return this.name;
 	}
@@ -68,17 +76,22 @@ export class Moon extends AbstractSystemObject {
 		let rc = this.radius.getRawRadiusC();
 		let r = [ra, rb, rc].sort();
 
-		if (!this.isMinorMoon || (r[0] == r[1] && r[1] == r[2])) {
+		let diff01 = r[1] - r[0];
+		let diff12 = r[2] - r[1];
+		let diff02 = r[2] - r[0];
+		let prec = 1e-6; // Number.EPSILON;
+
+		if (!this.isMinorMoon || ( diff01 <= prec && diff12 <= prec && diff02 <= prec)) {
 			// All axis have the same lenght
 			return 'Sphere';
 		}
 
-		if (r[0] < r[1] && r[1] < r[2]) {
+		if (diff01 > prec && diff12 > prec) {
 			// All axis are of different length
 			return 'Triaxial Spheroid';
 		}
 
-		if (r[0] == r[1] && r[1] < r[2]) {
+		if ( diff01 <= prec  && diff12 > prec) {
 			// There are two short an one long axis
 			return 'Prolate Shereoid';
 		}
@@ -104,8 +117,8 @@ export class Moon extends AbstractSystemObject {
 		return UnitValue.create(val, Dimensions.VELOCITY.lunarEscapeVelocity);
 	}
 
-	public getMarkup(): string {
-		return 'TODO';
+	public getMarkup(): any {
+		return {'tbd.': 1};
 	}
 
 	/**
@@ -116,6 +129,13 @@ export class Moon extends AbstractSystemObject {
 		// Returns true if radius <= 235km
 		let rad = this.radius.getRadiusA().changeUnit(Dimensions.LENGTH.km).asFloat();
 		return rad < 235;
+	}
+
+	public getType(): string {
+		if (this.isMinorMoon()) {
+			return 'Minor Moon';
+		}
+		return 'Major Moon';
 	}
 
 	public getVolume(): UnitValue {
@@ -144,6 +164,13 @@ export class Moon extends AbstractSystemObject {
 
 export class TriaxialRadius {
 	constructor(private readonly radiusA: number, private readonly radiusB = radiusA, private readonly radiusC = radiusA) { }
+
+	public static deserialize(data: any): TriaxialRadius {
+		let rA = data['radiusA'];
+		let rB = data['radiusB'];
+		let rC = data['radiusC'];
+		return new TriaxialRadius(rA, rB, rC);
+	}
 
 	public getRadiusA(): UnitValue {
 		return UnitValue.create(this.radiusA, Dimensions.LENGTH.lunarRadius);

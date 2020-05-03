@@ -26,9 +26,12 @@ export class UnitValueInputComponent implements OnInit {
 		} else {
 			// Check if the value is different
 			let changed = value.changeUnit(this.currentValue.unit);
-			if (changed.value.cmp(this.currentValue.value).toFixed(0) !== '0') {
+			let diff = changed.value.minus(this.currentValue.value).abs();
+			let prec = 1e-6;
+
+			if (diff.gte(new Big(prec))) {
 				// The value has changed
-				this.update(value);
+				this.update(changed);
 			}
 		}
 	}
@@ -47,7 +50,7 @@ export class UnitValueInputComponent implements OnInit {
 	set unit(unit: AbstractUnit) {
 		this.currentValue = this.currentValue.changeUnit(unit);
 		this.textValue = this.currentValue.value.toPrecision(4);
-		this.invalid = null;
+		this.invalid = this.validate(this.currentValue.value);
 		this.unitValueChange.emit(this.currentValue);
 	}
 

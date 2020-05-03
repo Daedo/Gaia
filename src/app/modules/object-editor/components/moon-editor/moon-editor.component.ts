@@ -52,7 +52,13 @@ export class MoonEditorComponent implements OnInit {
 	}
 
 	changeRadiusA(val: UnitValue) {
-		let newRad = this.currentRadius.withRadiusA(val);
+		let newRad = this.currentRadius;
+		if (this.isMinorMoon) {
+			newRad = this.currentRadius.withRadiusA(val);
+		} else {
+			newRad = this.currentRadius.withRadiusA(val).withRadiusB(val).withRadiusC(val);
+		}
+
 		this.moonChanged.emit(this.currentMoon.withRadius(newRad));
 	}
 
@@ -78,6 +84,14 @@ export class MoonEditorComponent implements OnInit {
 	}
 
 	getComposition(): string {
-		return '';
+		const markup = this.currentMoon.getMarkup();
+		let out = '';
+
+		for (const material in markup) {
+			let percent = markup[material] * 100;
+			percent = Math.round((percent + Number.EPSILON) * 100) / 100;
+			out += material + ': ' + percent + '%\n';
+		}
+		return out.trim();
 	}
 }

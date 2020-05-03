@@ -7,9 +7,11 @@ import { Orbit } from './orbit';
 import { AbstractSystemObject } from './abstract-system-object';
 import { AbstractStarSystem } from './star-system/abstract-star-system';
 import { UUID } from '../uuid-generator';
+import { deserializeIDMap } from '../io/serializeation-util';
 
 
 type IDMap = Map<string, AbstractSystemObject>;
+
 
 export class SolarSystem extends AbstractDataObject {
 	private constructor(uuid: string, private readonly name: string, private readonly objects: Map<ObjectType, IDMap> ) {
@@ -27,6 +29,58 @@ export class SolarSystem extends AbstractDataObject {
 
 		let uuid = UUID.getNext();
 		return new SolarSystem(uuid, name, map);
+	}
+
+	public static deserialize(object: any) {
+		let uuid = object['uuid'];
+		let name = object['name'];
+		let objMap = object['objects'];
+
+		let objects = {};
+		for (const typeID in objMap) {
+			const typeIDMap = objMap[typeID];
+			const dataType = SolarSystem.getDataType(<ObjectType>typeID);
+			let idMap = deserializeIDMap(typeIDMap, dataType);
+			objects[typeID] = idMap;
+		}
+		let objectMap = <Map<ObjectType, IDMap>> Map(objects);
+		return new SolarSystem(uuid, name, objectMap);
+	}
+
+	private static getObjectType(object: AbstractSystemObject): ObjectType {
+		if (object instanceof Planet) {
+			return ObjectType.PLANET;
+		}
+
+		if (object instanceof Star) {
+			return ObjectType.STAR;
+		} else if (object instanceof AbstractStarSystem) {
+			return ObjectType.STAR_SYSTEM;
+		}
+
+		if (object instanceof Moon) {
+			return ObjectType.MOON;
+		}
+
+		if (object instanceof Orbit) {
+			return ObjectType.ORBIT;
+		}
+	}
+
+	private static getDataType(object: ObjectType): any {
+		switch (object) {
+			case ObjectType.PLANET:
+				return Planet;
+			case ObjectType.MOON:
+				return Moon;
+			case ObjectType.ORBIT:
+				return Orbit;
+			case ObjectType.STAR:
+				return Star;
+			case ObjectType.STAR_SYSTEM:
+				return AbstractStarSystem;
+		}
+		return null;
 	}
 
 	public getName(): string {
@@ -58,7 +112,7 @@ export class SolarSystem extends AbstractDataObject {
 	}
 
 	public withAddedObject(object: AbstractSystemObject): SolarSystem {
-		let type = this.getObjectType(object);
+		let type = SolarSystem.getObjectType(object);
 		let oldMap = this.objects.get(type);
 		if (oldMap.has(object.uuid)) {
 			throw new Error('Object is already present');
@@ -69,7 +123,7 @@ export class SolarSystem extends AbstractDataObject {
 	}
 
 	public withDeletedObject(object: AbstractSystemObject): SolarSystem {
-		let type = this.getObjectType(object);
+		let type = SolarSystem.getObjectType(object);
 		let oldMap = this.objects.get(type);
 		if (!oldMap.has(object.uuid)) {
 			throw new Error('No object to delete');
@@ -80,7 +134,7 @@ export class SolarSystem extends AbstractDataObject {
 	}
 
 	public withUpdatedObject(object: AbstractSystemObject): SolarSystem {
-		let type = this.getObjectType(object);
+		let type = SolarSystem.getObjectType(object);
 		let oldMap = this.objects.get(type);
 		if (!oldMap.has(object.uuid)) {
 			throw new Error('No object to update');
@@ -90,31 +144,11 @@ export class SolarSystem extends AbstractDataObject {
 		return new SolarSystem(this.uuid, this.name, newObjects);
 	}
 
-	private getObjectType(object: AbstractSystemObject): ObjectType {
-		if (object instanceof Planet) {
-			return ObjectType.PLANET;
-		}
-
-		if (object instanceof Star) {
-			return ObjectType.STAR;
-		} else if (object instanceof AbstractStarSystem) {
-			return ObjectType.STAR_SYSTEM;
-		}
-
-		if (object instanceof Moon) {
-			return ObjectType.MOON;
-		}
-
-		if (object instanceof Orbit) {
-			return ObjectType.ORBIT;
-		}
-	}
-
 	public hasObject(object: AbstractSystemObject): boolean {
 		if (object === null || object === undefined) {
 			return false;
 		}
-		let type = this.getObjectType(object);
+		let type = SolarSystem.getObjectType(object);
 		if (type === null || type === undefined) {
 			return false;
 		}
@@ -123,5 +157,9 @@ export class SolarSystem extends AbstractDataObject {
 }
 
 export enum ObjectType {
-	MOON, PLANET, ORBIT, STAR, STAR_SYSTEM
+	MOON = 'moons',
+	PLANET = 'planets',
+	ORBIT = 'orbits',
+	STAR = 'stars',
+	STAR_SYSTEM = 'star-systems'
 }

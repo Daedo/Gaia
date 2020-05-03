@@ -1,8 +1,15 @@
 import { SolarSystem } from './objects/solar-system';
 import { Map } from 'immutable';
+import { deserializeIDMap } from './io/serializeation-util';
 
 export class Project {
 	constructor(private name: string, private systems: Map<string, SolarSystem>) {}
+
+	public static deserialize(object: any): Project {
+		let name = object['name'];
+		let systems = deserializeIDMap(object['systems'], SolarSystem) as Map<string, SolarSystem>;
+		return new Project(name, systems);
+	}
 
 	public getName(): string {
 		return this.name;

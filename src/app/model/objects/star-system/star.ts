@@ -12,6 +12,13 @@ export class Star extends AbstractStarSystem {
 		return new Star(UUID.getNext(), name, mass);
 	}
 
+	public static deserialize(data: any): Star {
+		let uuid = data['uuid'];
+		let name = data['name'];
+		let mass = data['mass'];
+		return new Star(uuid, name, mass);
+	}
+
 	/**
      * The Mass of the star in solar masses.
      */

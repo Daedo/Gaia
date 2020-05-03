@@ -16,6 +16,14 @@ export class Planet extends AbstractSystemObject {
 		return new Planet(UUID.getNext(), name, mass, radius);
 	}
 
+	public static deserialize(data: any): Planet {
+		let uuid = data['uuid'];
+		let name = data['name'];
+		let mass = data['mass'];
+		let radius = data['radius'];
+		return new Planet(uuid, name, mass, radius);
+	}
+
 	public getName(): string {
 		return this.name;
 	}

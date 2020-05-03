@@ -3,6 +3,7 @@ import { Star } from '../objects/star-system/star';
 import { SolarSystem } from '../objects/solar-system';
 import { Project } from '../project';
 import { Moon } from '../objects/moon';
+import { serialize, deserialize } from '../io/serialize';
 
 export function createStandardProject(): Project {
 	let earth = Planet.createPlanet('Terra');
