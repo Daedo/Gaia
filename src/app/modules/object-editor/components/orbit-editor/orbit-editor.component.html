@@ -1,3 +1,4 @@
+<!-- TODO Split this into two subcomponents -->
 <div *ngIf="!hasOrbit">
 	<!--
 		Allow the creation of a new Orbit:
@@ -5,13 +6,70 @@
 		Add to Existing Orbit
 	-->
 	<p>No Orbit found...</p>
-	<select>
-		<option *ngFor="let object of centerObjectCandidates" [ngValue]="object.uuid">{{object.name}}</option>
+	<select [(ngModel)]="centerObjectIndex">
+		<option *ngFor="let object of centerObjectCandidates; let i = index" [value]="i" [selected]="i === 0">{{object.name}}</option>
 	</select>
+	<button (click)="createOrbit()">Create Orbit</button>
 </div><div *ngIf="hasOrbit">
 	<p>Orbit found...</p>
 	<!--
 		Edit properties of orbit
 		Option to split the orbit if it is a joined orbit with another object.
 	-->
+
+	<!-- center Object, orbit properties, true anomaly-->
+
+	<div class="editor-row">
+		<div class="title-column"><b>Central Object</b></div>
+		<div class="data-column">
+			<select [(ngModel)]="centerObjectIndex">
+				<option *ngFor="let object of centerObjectCandidates; let i = index" [value]="i" [selected]="i === 0">{{object.name}}</option>
+			</select>
+		</div>
+	</div>
+
+	<!--<div class="editor-row">
+		<div class="title-column"><b>Semi-Major Axis</b></div>
+		<div class="data-column"><unit-value-input [unitValue]="currentMass" [editable]="true" (unitValueChange)="changeMass($event)"></unit-value-input></div>
+	</div>-->
+
+	<div class="editor-row">
+		<div class="title-column"><b>Semi-Minor Axis</b></div>
+		<div class="data-column"><unit-value-input [unitValue]="currentOrbit.getOrbitProperties().getSemiMinorAxis()"></unit-value-input></div>
+	</div>
+
+	<!--<div class="editor-row">
+		<div class="title-column"><b>Eccentricity</b></div>
+		<div class="data-column"><unit-value-input [unitValue]="currentMass" [editable]="true" (unitValueChange)="changeMass($event)"></unit-value-input></div>
+	</div>-->
+
+	<div class="editor-row">
+		<div class="title-column"><b>Periapsis</b></div>
+		<div class="data-column"><unit-value-input [unitValue]="currentOrbit.getOrbitProperties().getPeriapsis()"></unit-value-input></div>
+	</div>
+
+	<div class="editor-row">
+		<div class="title-column"><b>Apoapsis</b></div>
+		<div class="data-column"><unit-value-input [unitValue]="currentOrbit.getOrbitProperties().getApoapsis()"></unit-value-input></div>
+	</div>
+
+	<!--<div class="editor-row">
+		<div class="title-column"><b>Inclination</b></div>
+		<div class="data-column"><unit-value-input [unitValue]="currentMass" [editable]="true" (unitValueChange)="changeMass($event)"></unit-value-input></div>
+	</div>
+
+	<div class="editor-row">
+		<div class="title-column"><b>Longditude of the Ascending Node</b></div>
+		<div class="data-column"><unit-value-input [unitValue]="currentMass" [editable]="true" (unitValueChange)="changeMass($event)"></unit-value-input></div>
+	</div>
+
+	<div class="editor-row">
+		<div class="title-column"><b>Argument of Periapsis</b></div>
+		<div class="data-column"><unit-value-input [unitValue]="currentMass" [editable]="true" (unitValueChange)="changeMass($event)"></unit-value-input></div>
+	</div>
+
+	<div class="editor-row">
+		<div class="title-column"><b>True Anomaly</b></div>
+		<div class="data-column"><unit-value-input [unitValue]="currentMass" [editable]="true" (unitValueChange)="changeMass($event)"></unit-value-input></div>
+	</div>-->
 </div>

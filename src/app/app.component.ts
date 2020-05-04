@@ -20,7 +20,7 @@ export class AppComponent {
 			}, {
 				label: 'Save / Load / Export',
 				link: './save',
-				index: 2
+				index: 1
 			}
 		];
 	}

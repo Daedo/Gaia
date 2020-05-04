@@ -2,11 +2,18 @@ import { AbstractSystemObject } from './abstract-system-object';
 import { Map } from 'immutable';
 import { UnitValue } from '../unit/unit';
 import { Dimensions } from '../unit/dimension-collection';
+import { UUID } from '../uuid-generator';
 
 export class Orbit extends AbstractSystemObject {
-	constructor(uuid: string, private readonly centerObjectUUID: string,
+	private constructor(uuid: string, private readonly centerObjectUUID: string,
 		private readonly orbitProperties: OrbitProperties, private readonly obritObjects: Map<string, OrbitObject>) {
 		super(uuid);
+	}
+
+	public static createOrbit(centerObjectUUID: string, orbitProperties: OrbitProperties): Orbit {
+		let uuid = UUID.getNext();
+		let objects: Map<string, OrbitObject> = Map();
+		return new Orbit(uuid, centerObjectUUID, orbitProperties, objects);
 	}
 
 	public static deserialize(data: any): Orbit {
@@ -74,9 +81,15 @@ export class Orbit extends AbstractSystemObject {
 
 export class OrbitProperties {
 	// All numbers are in degree, eccentricity is in [0,1[
-	constructor(private readonly semiMajorAxis: number, private readonly eccentricity: number,
+	private constructor(private readonly semiMajorAxis: number, private readonly eccentricity: number,
 		private readonly inclination: number, private readonly longditudeOfTheAscendingNode: number,
 		private readonly argumentOfPeriapsis: number) {
+	}
+
+	public static createOrbitProperties(semiMajorAxis = 1, eccentricity = 0,
+		inclination = 0, longditudeOfTheAscendingNode = 0,
+		argumentOfPeriapsis = 0): OrbitProperties {
+			return new OrbitProperties(semiMajorAxis, eccentricity, inclination, longditudeOfTheAscendingNode, argumentOfPeriapsis);
 	}
 
 	public getSemiMajorAxis(): UnitValue {
@@ -158,7 +171,11 @@ export class OrbitProperties {
 }
 
 export class OrbitObject {
-	constructor(private readonly objectUUID: string, private readonly trueAnomaly: number) {
+	private constructor(private readonly objectUUID: string, private readonly trueAnomaly: number) {
+	}
+
+	public static createOrbitObject(objectUUID: string, trueAnomaly = 0) {
+		return new OrbitObject(objectUUID, trueAnomaly);
 	}
 
 	public getObjectUUID(): string {

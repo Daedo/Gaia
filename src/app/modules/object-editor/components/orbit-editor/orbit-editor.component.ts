@@ -1,9 +1,10 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { Planet } from '../../../../model/objects/planet';
 import { Moon } from '../../../../model/objects/moon';
-import { Orbit, OrbitObject } from '../../../../model/objects/orbit';
+import { Orbit, OrbitObject, OrbitProperties } from '../../../../model/objects/orbit';
 import { DataService } from '../../../data/services/data.service';
 import { Star } from '../../../../model/objects/star-system/star';
+import { compileNgModule } from '@angular/compiler';
 
 @Component({
 	selector: 'app-orbit-editor',
@@ -23,7 +24,7 @@ export class OrbitEditorComponent implements OnInit {
 		this.currentOrbitObject = null;
 	}
 
-	ngOnInit(): void {}
+	ngOnInit(): void { }
 
 	@Input()
 	set orbitObject(object: Planet | Moon) {
@@ -32,7 +33,7 @@ export class OrbitEditorComponent implements OnInit {
 		}
 	}
 
-	private update(object: Planet| Moon) {
+	private update(object: Planet | Moon) {
 		this.currentObject = object;
 
 		this.currentOrbit = null;
@@ -62,6 +63,8 @@ export class OrbitEditorComponent implements OnInit {
 				this.centerObjectCandidates = Array.from(system.getPlanets().values());
 			}
 			// TODO Search for Orbits this could fit in.
+			// Planet Orbits for planets
+			// Moon Orbits for moons
 		}
 	}
 
@@ -69,19 +72,18 @@ export class OrbitEditorComponent implements OnInit {
 		return this.currentOrbit != null;
 	}
 
+	// Orbit Creation Options
 	centerObjectCandidates: Star[] | Planet[];
 	orbitCandidates: Orbit[];
-	// Orbit Creation Options
-	/*getCenterObjectCandidates(): Star[] | Planet[] {
-		return this.centerObjectCandidates;
+	centerObject: Star | Planet;
+	centerObjectIndex = 0;
+
+	createOrbit() {
+		let centerObject = this.centerObjectCandidates[this.centerObjectIndex];
+		this.currentOrbit = Orbit.createOrbit(centerObject.uuid, OrbitProperties.createOrbitProperties())
+			.withAddedObject(OrbitObject.createOrbitObject(this.currentObject.uuid));
+		// TODO Notify Data Service
 	}
-
-	getOrbitCandidates(): Orbit[] {
-		// planet Orbits for planets
-		// moon orbits for moons
-		return this.orbitCandidates;
-	}*/
-
 	// Orbit Edit Options
 	@Output()
 	orbitChanged: EventEmitter<Orbit>;
