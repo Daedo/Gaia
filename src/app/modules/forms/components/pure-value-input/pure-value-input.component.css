@@ -1,0 +1,21 @@
+.unitInput {
+	align-items: center;
+	min-height: 32px;
+	display: inline-flex;
+}
+
+.unitInput > * {
+	height: 100%;
+}
+
+.unitInput > label {
+	width: 111px;
+}
+
+.unitInput > input, label {
+	text-align: right;
+}
+
+.warning {
+	display: inline-flex
+}

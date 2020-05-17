@@ -6,6 +6,7 @@ import { SelectionService } from '../../services/selection.service';
 import { Planet } from '../../../../model/objects/planet';
 import { Star } from '../../../../model/objects/star-system/star';
 import { Moon } from '../../../../model/objects/moon';
+import { OrbitObject, Orbit } from '../../../../model/objects/orbit';
 
 @Component({
 	selector: 'app-object-editor',
@@ -56,6 +57,17 @@ export class ObjectEditorComponent implements OnInit {
 		this.current = object;
 		let system = this.dataService.getSolarSystem(object);
 		let newSystem = system.withUpdatedObject(object);
+		this.updateSystem(newSystem);
+	}
+
+	updateOrbit(orbit: Orbit) {
+		let system = this.dataService.getSolarSystem(this.current);
+		let newSystem: SolarSystem;
+		if (system.hasObject(orbit)) {
+			newSystem = system.withUpdatedObject(orbit);
+		} else {
+			newSystem = system.withAddedObject(orbit);
+		}
 		this.updateSystem(newSystem);
 	}
 

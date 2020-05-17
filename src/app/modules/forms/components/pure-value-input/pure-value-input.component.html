@@ -1,0 +1,4 @@
+<div class="unitInput">
+<input [hidden]="!editable" [(ngModel)]="value" type="text"/><label [hidden]="editable">{{value}}</label>&nbsp;
+<mat-chip-list class="warning"  *ngIf="invalid"><mat-chip color="warn" selected>{{invalid}}</mat-chip></mat-chip-list>
+</div>

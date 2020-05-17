@@ -4,14 +4,15 @@ import { UnitValueInputComponent } from './components/unit-value-input/unit-valu
 import { UnitPickerComponent } from './components/unit-picker/unit-picker.component';
 import {FormsModule as CoreFormsModule} from '@angular/forms';
 import {MatChipsModule} from '@angular/material/chips';
+import { PureValueInputComponent } from './components/pure-value-input/pure-value-input.component';
 
 @NgModule({
-  declarations: [UnitValueInputComponent, UnitPickerComponent],
+  declarations: [UnitValueInputComponent, UnitPickerComponent, PureValueInputComponent],
   imports: [
     CommonModule,
     CoreFormsModule,
     MatChipsModule
   ],
-  exports: [UnitValueInputComponent, UnitPickerComponent, CommonModule]
+  exports: [UnitValueInputComponent, UnitPickerComponent,PureValueInputComponent,  CommonModule]
 })
 export class FormsModule { }

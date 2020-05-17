@@ -5,6 +5,7 @@ import { Orbit, OrbitObject, OrbitProperties } from '../../../../model/objects/o
 import { DataService } from '../../../data/services/data.service';
 import { Star } from '../../../../model/objects/star-system/star';
 import { compileNgModule } from '@angular/compiler';
+import { UnitValue } from '../../../../model/unit/unit';
 
 @Component({
 	selector: 'app-orbit-editor',
@@ -12,6 +13,9 @@ import { compileNgModule } from '@angular/compiler';
 	styleUrls: ['./orbit-editor.component.css', '../editor.css']
 })
 export class OrbitEditorComponent implements OnInit {
+	readonly eccentricityLowerBound = 0;
+	readonly eccentricityUpperBound = 1 - 1e-10;
+
 	currentObject: Planet | Moon;
 	currentOrbit: Orbit;
 	currentOrbitObject: OrbitObject;
@@ -52,21 +56,22 @@ export class OrbitEditorComponent implements OnInit {
 
 		this.centerObjectCandidates = [];
 		this.orbitCandidates = [];
-		// if there is no orbit
-		if (this.currentOrbit === null) {
-			// update candidates
-			if (this.currentObject instanceof Planet) {
-				// stars for planets
-				this.centerObjectCandidates = Array.from(system.getStars().values());
-			} else {
-				// planets for moons
-				this.centerObjectCandidates = Array.from(system.getPlanets().values());
-			}
+		// update candidates
+		if (this.currentObject instanceof Planet) {
+			// stars for planets
+			this.centerObjectCandidates = Array.from(system.getStars().values());
+		} else {
+			// planets for moons
+			this.centerObjectCandidates = Array.from(system.getPlanets().values());
+		}
+
+		if (this.currentObject === null) {
 			// TODO Search for Orbits this could fit in.
 			// Planet Orbits for planets
 			// Moon Orbits for moons
 		}
 	}
+
 
 	get hasOrbit(): boolean {
 		return this.currentOrbit != null;
@@ -82,14 +87,42 @@ export class OrbitEditorComponent implements OnInit {
 		let centerObject = this.centerObjectCandidates[this.centerObjectIndex];
 		this.currentOrbit = Orbit.createOrbit(centerObject.uuid, OrbitProperties.createOrbitProperties())
 			.withAddedObject(OrbitObject.createOrbitObject(this.currentObject.uuid));
-		// TODO Notify Data Service
+			this.orbitChanged.emit(this.currentOrbit);
 	}
 	// Orbit Edit Options
 	@Output()
 	orbitChanged: EventEmitter<Orbit>;
 
+	changeSemiMajorAxis(val: UnitValue) {
+		let properties = this.currentOrbit.getOrbitProperties().withSemiMajorAxis(val);
+		this.currentOrbit = this.currentOrbit.withOrbitProperties(properties);
+		this.orbitChanged.emit(this.currentOrbit);
+	}
 
+	changeEccentricity(val: number) {
+		let properties = this.currentOrbit.getOrbitProperties().withEccentricity(val);
+		this.currentOrbit = this.currentOrbit.withOrbitProperties(properties);
+		this.orbitChanged.emit(this.currentOrbit);
+	}
 
+	changeInclination(val: UnitValue) {
+		let properties = this.currentOrbit.getOrbitProperties().withInclination(val);
+		this.currentOrbit = this.currentOrbit.withOrbitProperties(properties);
+		this.orbitChanged.emit(this.currentOrbit);
+	}
 
+	changeLongditudeOfTheAscendingNode(val: UnitValue) {
+		let properties = this.currentOrbit.getOrbitProperties().withLongditudeOfTheAscendingNode(val);
+		this.currentOrbit = this.currentOrbit.withOrbitProperties(properties);
+		this.orbitChanged.emit(this.currentOrbit);
+	}
 
+	changeArgumentOfPeriapsis(val: UnitValue) {
+		let properties = this.currentOrbit.getOrbitProperties().withArgumentOfPeriapsis(val);
+		this.currentOrbit = this.currentOrbit.withOrbitProperties(properties);
+		this.orbitChanged.emit(this.currentOrbit);
+	}
+
+	/*changeTrueAnomaly(val: UnitValue) {
+	}*/
 }

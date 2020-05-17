@@ -23,6 +23,7 @@
 		<app-star-editor [hidden]="!currentIsStar" [star]="current" (starChanged)="updateObject($event)"></app-star-editor>
 		<app-planet-editor [hidden]="!currentIsPlanet" [planet]="current" (planetChanged)="updateObject($event)"></app-planet-editor>
 		<app-moon-editor [hidden]="!currentIsMoon" [moon]="current" (moonChanged)="updateObject($event)"></app-moon-editor>
-		<app-orbit-editor [hidden]='!currentCanHaveOrbit' [orbitObject]="current"></app-orbit-editor>
+		<hr [hidden]='!currentCanHaveOrbit'/>
+		<app-orbit-editor [hidden]='!currentCanHaveOrbit' [orbitObject]="current" (orbitChanged)="updateOrbit($event)"></app-orbit-editor>
 	</mat-sidenav-content>
 </mat-sidenav-container>
